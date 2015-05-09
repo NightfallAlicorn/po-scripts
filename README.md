@@ -2,12 +2,14 @@
 ---
 Scripts I've coded to be used with the Pokemon Online application.
 
-# Script Types
+# Using Scripts
 ---
 There are 3 types of scripts. Battle, Client and Server.
 * Battle - Scripts that perform in the battle window.
 * Client - Scripts that perform, from the client user's alt, in chat channels.
 * Server - Scripts that performs mostly overall on the server.
+
+The instrucitons how to set up a script can be found in the folder directory.
 
 # Contributing
 ---
