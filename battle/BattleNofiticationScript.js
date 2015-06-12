@@ -1,5 +1,5 @@
 /*
-Battle Notification Script v1.00
+Battle Notification Script v1.01
 By Nightfall Alicorn
 
 - Introduction -
@@ -54,32 +54,32 @@ By Nightfall Alicorn
     
 */
 
-// GLOBAL VARS + JSHint SETTINS + JSLint SETTINGS
+// GLOBAL VARS + JSHint & JSLint SETTINGS
 /*global battle, client*/
 /*jshint strict: false, shadow: true, evil: true, laxcomma: true*/
 /*jslint sloppy: true, vars: true, evil: true, plusplus: true*/
 
 // GLOBAL VARIABLES
-var vgTurn = 0;
+var TURN = 0;
 
-var objPoBattleScript;
-objPoBattleScript = ({
-    onBeginTurn: function (vTurn) {
-        vgTurn = vTurn;
-        var vMyTime = battle.data.team(battle.me).time;
-        var vOpponentName = battle.data.team(1 - battle.me).name;
-        var vOpponentTime = battle.data.team(1 - battle.me).time;
+var PO_BATTLE_SCRIPT;
+PO_BATTLE_SCRIPT = ({
+    onBeginTurn: function (turn) {
+        TURN = turn;
+        var myTime = battle.data.team(battle.me).time;
+        var opponentName = battle.data.team(1 - battle.me).name;
+        var opponentTime = battle.data.team(1 - battle.me).time;
         if (battle.isActiveWindow === false) {
-            client.trayMessage("Battle", "Turn: " + vgTurn + "\n" + "Time: " + vMyTime + " / " + vOpponentTime + " seconds\n" + vOpponentName + " made their move.");
+            client.trayMessage("Battle", "Turn: " + TURN + "\n" + "Time: " + myTime + " / " + opponentTime + " seconds\n" + opponentName + " made their move.");
         }
     }, // END OF onBeginTurn
 
-    onPlayerMessage: function (vSpot, vMessage) {
-        var vMyTime = battle.data.team(battle.me).time;
-        var vOpponentName = battle.data.team(1 - battle.me).name;
-        var vOpponentTime = battle.data.team(1 - battle.me).time;
+    onPlayerMessage: function (spot, message) {
+        var myTime = battle.data.team(battle.me).time;
+        var opponentName = battle.data.team(1 - battle.me).name;
+        var opponentTime = battle.data.team(1 - battle.me).time;
         if (battle.isActiveWindow === false) {
-            client.trayMessage("Battle", "Turn: " + vgTurn + "\n" + "Time: " + vMyTime + " / " + vOpponentTime + " seconds\n" + vOpponentName + " sent a message.");
+            client.trayMessage("Battle", "Turn: " + TURN + "\n" + "Time: " + myTime + " / " + opponentTime + " seconds\n" + opponentName + " sent a message.");
         }
     } // END OF onPlayerMessage
 
