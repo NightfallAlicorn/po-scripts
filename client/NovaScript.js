@@ -1,5 +1,5 @@
 /*
-NovaScript v1.01
+NovaScript v1.02
 By Nightfall Alicorn
 
 */
@@ -953,46 +953,44 @@ PO_CLIENT_SCRIPT = ({
         if (html === true) {
             return;
         }
-        // CONVERT TO HTML + ADD FLASHES + ADD LINKS
+        // CONVERT TO HTML + ADD FLASHES + ADD LINKS + PRINT HTML + PING FLASH NOTIFICATIONS
         if (fullMessage.indexOf(": ") > -1) {
-            // REMOVE ALL HTML FROM USER MESSAGE
+            sys.stopEvent();
+            // ESCAPE HTML
             var newMessage = toolHtmlEscape(userSentMessage);
-            // ADD FLASHES
-            if ((userSentName !== myName) || (userSentName === myName)) {
-                // MY NAME CHECK
-                var myNameFlash = newMessage.match(new RegExp('\\b' + myName + '\\b', 'i'));
-                if (myNameFlash !== null) {
-                    newMessage = newMessage.replace(myNameFlash, "<i><span style='BACKGROUND-COLOR: " + SETTINGS.flashColor + "'>" + myNameFlash + "</span></i><ping/>");
-                }
-                // STALKWORD CHECK
-                var stalkWordFlash;
-                for (x = 0; x < SETTINGS.stalkWordArray.length; x++) {
-                    stalkWordFlash = newMessage.match(new RegExp('\\b' + SETTINGS.stalkWordArray[x] + '\\b', 'i'));
-                    if (stalkWordFlash !== null) {
-                        newMessage = newMessage.replace(stalkWordFlash, "<i><span style='BACKGROUND-COLOR: " + SETTINGS.flashColor + "'>" + stalkWordFlash + "</span></i><ping/>");
-                    }
+            // ADD NAME FLASH
+            var myNameFlash = newMessage.match(new RegExp('\\b' + myName + '\\b', 'i'));
+            if (myNameFlash !== null) {
+                newMessage = newMessage.replace(myNameFlash, "<i><span style='BACKGROUND-COLOR: " + SETTINGS.flashColor + "'>" + myNameFlash + "</span></i><ping/>");
+            }
+            // ADD STALKWORD FLASH
+            var stalkWordFlash;
+            for (x = 0; x < SETTINGS.stalkWordArray.length; x++) {
+                stalkWordFlash = newMessage.match(new RegExp('\\b' + SETTINGS.stalkWordArray[x] + '\\b', 'i'));
+                if (stalkWordFlash !== null) {
+                    newMessage = newMessage.replace(stalkWordFlash, "<i><span style='BACKGROUND-COLOR: " + SETTINGS.flashColor + "'>" + stalkWordFlash + "</span></i><ping/>");
                 }
             }
             // ADD WEB LINKS
             newMessage = newMessage.replace(/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig, "<a href='$1'>$1</a>");
             // ADD CHANNEL LINKS
             newMessage = client.channel(channelId).addChannelLinks(newMessage);
-            // OUTPUT USER MESSAGE
-            if (userSentId !== -1) {
-                // SERVER AUTH SYMBOL CHECK
+            // PRINT HTML
+            if (userSentId === -1) { // BOT MESSAGE
+                printHtml("<font color='" + SETTINGS.botColor + "'><timestamp/><b>" + userSentName + ":</b></font> " + newMessage, channelId);
+            }
+            if (userSentId !== -1) { // USER MESSAGE
+                userSentNameFormatted = userSentName;
+                // SERVER AUTH CHECK
                 var serverAuthSymbol = "";
                 if (userSentAuth > 0) {
                     serverAuthSymbol = "+";
+                    userSentNameFormatted = "<i>" + userSentNameFormatted + "</i>";
                 }
-                printHtml("<font color='" + userSentColor + "'><timestamp/><b>" + serverAuthSymbol + userSentName + ":</b></font> " + newMessage, channelId);
-                sys.stopEvent();
-            }
-            if (userSentId === -1) { // OUTPUT BOT MESSAGE
-                printHtml("<font color='" + SETTINGS.botColor + "'><timestamp/><b>" + userSentName + ":</b></font> " + newMessage, channelId);
-                sys.stopEvent();
+                printHtml("<font color='" + userSentColor + "'><timestamp/>" + serverAuthSymbol + "<b>" + userSentNameFormatted + ":</b></font> " + newMessage, channelId);
             }
             // BLOCK PINGS FROM BOTS AND SELF
-            if ((userSentId === -1) || (userSentName === myName)) {
+            if (userSentId === -1 || userSentName === myName) {
                 newMessage = newMessage.replace(/<ping\/>/g, "");
             }
             // TASKBAR NOFIFICATION IF PING TAG ARE DETECTED
