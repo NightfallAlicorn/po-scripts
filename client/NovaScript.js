@@ -1,5 +1,5 @@
 /*
-NovaScript v1.00
+NovaScript v1.01
 By Nightfall Alicorn
 
 */
@@ -382,13 +382,13 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
             return;
         }
         if (SETTINGS.stalkWordArray.indexOf(commandData.toLowerCase()) === -1) {
-            sendBotMsg(vCommandData.toLowerCase() + " isn't currently in stalkwords list.");
+            sendBotMsg(commandData.toLowerCase() + " isn't currently in stalkwords list.");
             return;
         }
         var indexToRemove = SETTINGS.stalkWordArray.indexOf(commandData.toLowerCase());
         SETTINGS.stalkWordArray.splice(indexToRemove, 1);
+        sendBotMsg(commandData.toLowerCase() + " has been removed from stalkwords list.");
         saveSettings();
-        sendBotMsg(vCommandData.toLowerCase() + " has been removed from stalkwords list.");
         return;
     }
     // COLOR TO HEX
