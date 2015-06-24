@@ -16,8 +16,8 @@ sys.unsetAllTimers();
 var ROOT = this;
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
 var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
-var SCRIPT_URL = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
-var SCRIPT_VERSION = "v1.02";
+var SCRIPT_URL = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScriptUpdateTest.js";
+var SCRIPT_VERSION = "v1.03";
 var INIT = false;
 var HAD_OTHER_BOT_ERROR = false;
 
