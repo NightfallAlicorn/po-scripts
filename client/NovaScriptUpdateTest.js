@@ -610,7 +610,7 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
             if (currentScriptVersion === SCRIPT_VERSION) {
                 sendBotMsg("No script changes.");
             } else {
-                sendBotMsg("Script updated from " + currentScriptVersion " to " + SCRIPT_VERSION);
+                sendBotMsg("Script updated from " + currentScriptVersion + " to " + SCRIPT_VERSION);
             }
         } catch (error) {
             sendBotMsg("script update error on line " + error.lineNumber + ", " + error.message);
