@@ -1,5 +1,5 @@
 /*
-NovaScript v1.03
+NovaScript v1.04
 By Nightfall Alicorn
 
 */
@@ -561,6 +561,10 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
     if (command === "changebotname") {
         if (commandData === "") {
             sendBotMsg("Enter a new bot name.");
+            return;
+        }
+        if (commandData.length > 20) {
+            sendBotMsg("Bot name can only be 20 characters long.");
             return;
         }
         SETTINGS.botName = commandData;
