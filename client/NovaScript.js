@@ -1,5 +1,5 @@
 /*
-NovaScript v1.04
+NovaScript v1.05
 By Nightfall Alicorn
 
 */
@@ -929,7 +929,7 @@ PO_CLIENT_SCRIPT = ({
         // SERVER NOTIFICATIONS
         // ******** ******** ********
         if (html === true) {
-            // TOUR ALERT NOTIFICATION
+            // -- TOUR ALERT NOTIFICATION --
             var msgPrefix = "<font color=red>You are currently alerted when";
             var msgSuffix = "tournament is started!</font><ping/>";
             if (fullMessage.substring(0, msgPrefix.length) === msgPrefix && fullMessage.indexOf(msgSuffix) !== -1) {
@@ -942,21 +942,26 @@ PO_CLIENT_SCRIPT = ({
                 var tierName = fullMessage.substring(msgPrefix.length + 1, fullMessage.indexOf(msgSuffix) - 1);
                 client.trayMessage("Tour Alert", tierName + " tournament has just started signups.");
             }
-            // MAFIA ALERT NOTIFICATION
+            // -- MAFIA ALERT NOTIFICATION --
             var msgPrefix = "A";
             var msgSuffix = "mafia game is starting, Ozma<ping/>";
             if (fullMessage.substring(0, msgPrefix.length) === msgPrefix && fullMessage.indexOf(msgSuffix) !== -1) {
-                print(fullMessage);
                 var themeName = fullMessage.substring(msgPrefix.length + 1, fullMessage.indexOf(msgSuffix) - 1);
                 client.trayMessage("Mafia Alert", themeName + " theme has just started signups.");
             }
-            // TOUR ROUND NOFIFICATION
+            // -- TOUR ROUND NOFIFICATION --
             if (SETTINGS.alertTourRound === true) {
                 if (fullMessage.indexOf("Round") !== -1) {
                     client.trayMessage("Tour Alert", "Next round in tournament.");
                 } else if (fullMessage.indexOf("Final Match") !== -1) {
                     client.trayMessage("Tour Alert", "Final round in tournament.");
                 }
+            }
+            // -- TOUR WAITING FOR BATTLE NOFIFICATION --
+            var msgPrefix = "<ping/><font color=red>";
+            var msgSuffix = "to avoid disqualification - if they are not on, post a message in tournaments about it and contact a megauser if necessary.</font>";
+            if (fullMessage.indexOf(msgPrefix) !== -1 && fullMessage.indexOf(msgSuffix) !== -1) {
+                client.trayMessage("Tour Alert", "Your next battle is up in Tournaments.");
             }
         }
         // FORMAT MESSAGES
