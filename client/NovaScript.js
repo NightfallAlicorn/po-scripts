@@ -1,5 +1,5 @@
 /*
-NovaScript v1.02
+NovaScript v1.03
 By Nightfall Alicorn
 
 */
@@ -16,6 +16,7 @@ sys.unsetAllTimers();
 var ROOT = this;
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
 var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
+var SCRIPT_URL = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
 var INIT = false;
 var HAD_OTHER_BOT_ERROR = false;
 
@@ -599,6 +600,24 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
         saveSettings();
         return;
     }
+    // UPDATE SCRIPT
+    // ******** ******** ********
+    if (command === "updatescript") {
+        if (sys.isSafeScripts() === true) {
+            sendBotMsg("This command requires Safe Scripts to be enabled.");
+            return;
+        }
+        sendBotMsg("Downloading script...");
+        try {
+            var scriptData = String(sys.synchronousWebCall(SCRIPT_URL));
+            sys.writeToFile(sys.scriptsFolder + "scripts.js", scriptData);
+            sys.changeScript(scriptData, false);
+            sendBotMsg("Script updated.");
+        } catch (error) {
+            sendBotMsg("script update error on line " + error.lineNumber + ", " + error.message);
+        }
+        return;
+    }
     // OWNER HELP CONSOLE
     // ******** ******** ********
     if ((command === "help") || (command === "commands")) {
@@ -629,6 +648,7 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
         ,"eval [script]: Performs script actions. Use with caution."
         ,"obj [global/client/client.network()/sys]: Prints list of Pokemon Online's object keys. Own objects can be viewed."
         ,"webcall [link]: Obtains and prints data from the web."
+        ,"updatescript: Downloads and updates the script from its hosting source."
         ,"--- --- ---"
         ,"linkshorten [link]: Prints a shorten version of a web link."
         ,"--- --- ---"
