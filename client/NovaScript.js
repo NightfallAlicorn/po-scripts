@@ -1,5 +1,5 @@
 /*
-NovaScript v1.05
+NovaScript v1.06
 By Nightfall Alicorn
 
 */
@@ -38,9 +38,6 @@ SETTINGS.stalkWordArray = [];
 SETTINGS.youTubeStatsEnabled = true;
 
 var PO_CLIENT_SCRIPT;
-
-sendBotHtmlMsg("<img src='pokemon:num=359-1&gen=6'>");
-sendBotMsg("Use " + SETTINGS.commandSymbolOwner + "help for commands.");
 
 // COMMAND HANDLER OWNER
 function commandHandlerOwner(command, commandData, channelId, channelName) {
@@ -622,6 +619,22 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
         }
         return;
     }
+    // CHANGE OWNER COMMAND SYMBOL
+    // ******** ******** ********
+    if (command === "changeownercommandsymbol") {
+        if (commandData.length < 1 || commandData.length > 3) {
+            sendBotMsg("Please insert a symbol between 1 to 3 characters.");
+            return;
+        }
+        if (commandData.indexOf(" ") !== -1) {
+            sendBotMsg("The command symbol cannot contain spaces.");
+            return;
+        }
+        SETTINGS.commandSymbolOwner = commandData;
+        sendBotMsg("Command symbol changed to: " + commandData);
+        saveSettings();
+        return;
+    }
     // OWNER HELP CONSOLE
     // ******** ******** ********
     if ((command === "help") || (command === "commands")) {
@@ -660,6 +673,7 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
         ,"changebotname [new name]: Changes the bot name."
         ,"changebotcolo(u)r [hex]: Changes bot color."
         ,"changeflashcolo(u)r [hex]: Changes flash/stalkword color."
+        ,"changeownercommandsymbol [symbol]: Changes the script owner's command symbol. Can be 1-3 characters."
         ,"friend(s): Displays your list of friends and their online status."
         ,"[add/remove]friend: Add/Remove friend."
         ,"stalkword(s): Displays your current stalkwords."
@@ -676,10 +690,18 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
                 print(helpArrayOwner[x]);
                 continue;
             }
+            if (helpArrayOwner[x].charAt(0) === "-") {
+                print(helpArrayOwner[x]);
+                continue;
+            }
             print(SETTINGS.commandSymbolOwner + helpArrayOwner[x]);
         }
         for (x = 0; x < helpArrayOther.length; x++) {
             if (x === 0) {
+                print(helpArrayOther[x]);
+                continue;
+            }
+            if (helpArrayOther[x].charAt(0) === "-") {
                 print(helpArrayOther[x]);
                 continue;
             }
@@ -721,13 +743,19 @@ function sendChanBotMsg(channelId, message) {
     return;
 }
 // SEND BOT MESSAGE
-function sendBotMsg(message) {
-    client.printChannelMessage("++" + SETTINGS.botName + ": " + message, client.currentChannel(), false);
+function sendBotMsg(message, channelId) {
+    if (channelId === undefined) {
+        channelId = client.currentChannel();
+    }
+    client.printChannelMessage("++" + SETTINGS.botName + ": " + message, channelId, false);
     return;
 }
 // SEND BOT HTML MESSAGE
-function sendBotHtmlMsg(message) {
-    client.printChannelMessage("<font color='" + SETTINGS.botColor + "'><timestamp/><b>" + "++" + SETTINGS.botName + ":</font></b> " + message, client.currentChannel(), true);
+function sendBotHtmlMsg(message, channelId) {
+    if (channelId === undefined) {
+        channelId = client.currentChannel();
+    }
+    client.printChannelMessage("<font color='" + SETTINGS.botColor + "'><timestamp/><b>" + "++" + SETTINGS.botName + ":</font></b> " + message, channelId, true);
     return;
 }
 // SAVE SETTINGS
@@ -892,6 +920,10 @@ client.network().playerLogin.connect(function () {
         loadSettings();
     }
 });
+
+// INITIZE NOTIFATION
+sendBotHtmlMsg("<img src='pokemon:num=359-1&gen=6'>");
+sendBotMsg("Use " + SETTINGS.commandSymbolOwner + "help for commands.");
 
 PO_CLIENT_SCRIPT = ({
     onPlayerReceived: function (userIdReceived) {
@@ -1058,9 +1090,9 @@ PO_CLIENT_SCRIPT = ({
                             .toLowerCase().substr(2).replace("h", "h ").replace("m", "m ").replace("s", "s");
                     var views = youTubeData.items[0].statistics.viewCount;
                     // PRINT MESSAGE
-                    sendBotMsg("Title: " + title + ", Author: " + author + ", Comments: " + comments + ", Duration: " + duration + ", Views: " + views);
+                    sendBotMsg("Title: " + title + ", Author: " + author + ", Comments: " + comments + ", Duration: " + duration + ", Views: " + views, channelId);
                 } catch (error) {
-                    sendBotMsg("YouTube video data load failed.");
+                    sendBotMsg("YouTube video data load failed.", channelId);
                 }
             }
         }());
@@ -1083,13 +1115,13 @@ PO_CLIENT_SCRIPT = ({
         // COMMAND + COMMAND DATA SETUP
         // ******** ******** ********
         var command = "", commandData = "";
-        if (SETTINGS.commandSymbolOwner.indexOf(sentMessage.charAt(0)) !== -1) {
+        if (SETTINGS.commandSymbolOwner === sentMessage.substring(0, SETTINGS.commandSymbolOwner.length)) {
             var split = sentMessage.indexOf(" ");
             if (split !== -1) {
-                command = sentMessage.substring(1, split).toLowerCase();
+                command = sentMessage.substring(SETTINGS.commandSymbolOwner.length, split).toLowerCase();
                 commandData = sentMessage.substr(split + 1);
             } else {
-                command = sentMessage.substr(1).toLowerCase();
+                command = sentMessage.substr(SETTINGS.commandSymbolOwner.length).toLowerCase();
             }
         }
         // PREVENT OWNER COMMANDS BEING SEEN, EVEN TYPO ONES
