@@ -1,5 +1,5 @@
 /*
-NovaScript v1.07
+NovaScript v1.08
 By Nightfall Alicorn
 
 */
@@ -788,14 +788,12 @@ function loadSettings() {
 // TOOL - RANDOM PO ELEMENT
 // Tested objects: sys.pokemon, sys.move, sys.item, sys.nature, sys.ability, sys.gender
 function toolRandomPoElement(obj) {
-    var x, elementArray = [];
-    for (x = 0; x < 1000; x++) {
-        if ((["Missingno", undefined, ""].indexOf(obj(x)) !== -1) && (x > 1)) {
-            break;
-        }
+    var x = 0, elementArray = [];
+    while ((["Missingno", undefined, ""].indexOf(obj(x)) === -1) || (x < 1)) {
         elementArray[x] = obj(x);
+        x++;
     }
-    return elementArray[Math.floor((Math.random() * elementArray.length) + 0)];
+    return elementArray[Math.floor(Math.random() * elementArray.length)];
 }
 // TOOL - RANDOM NUMBER GENERATOR
 function toolRng(minNumber, maxNumber) {
