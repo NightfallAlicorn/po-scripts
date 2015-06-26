@@ -1,5 +1,5 @@
 /*
-NovaScript v1.06
+NovaScript v1.07
 By Nightfall Alicorn
 
 */
@@ -989,9 +989,15 @@ PO_CLIENT_SCRIPT = ({
                     client.trayMessage("Tour Alert", "Final round in tournament.");
                 }
             }
-            // -- TOUR WAITING FOR BATTLE NOFIFICATION --
+            // -- TOUR WAITING FOR BATTLE NON-ACTIVE NOFIFICATION --
             var msgPrefix = "<ping/><font color=red>";
             var msgSuffix = "to avoid disqualification - if they are not on, post a message in tournaments about it and contact a megauser if necessary.</font>";
+            if (fullMessage.indexOf(msgPrefix) !== -1 && fullMessage.indexOf(msgSuffix) !== -1) {
+                client.trayMessage("Tour Alert", "Your next battle is up in Tournaments.");
+            }
+            // -- TOUR WAITING FOR BATTLE ACTIVE NOFIFICATION --
+            var msgPrefix = "<ping/>";
+            var msgSuffix = "ASAP - if they are not on, post a message in tournaments about it and contact a megauser if necessary.";
             if (fullMessage.indexOf(msgPrefix) !== -1 && fullMessage.indexOf(msgSuffix) !== -1) {
                 client.trayMessage("Tour Alert", "Your next battle is up in Tournaments.");
             }
