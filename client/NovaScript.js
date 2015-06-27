@@ -1,5 +1,5 @@
 /*
-NovaScript v1.08
+NovaScript v1.09
 By Nightfall Alicorn
 
 */
@@ -515,7 +515,7 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
                 break;
         }
         var timerAnswerMsg = sys.setTimer(function () {
-            sendBotMsg("The answer is \"" + answerRng + "\".");
+            sendBotMsg("The answer is \"" + answerRng + "\".", channelId);
         }, 3000, false);
         return;
     }
