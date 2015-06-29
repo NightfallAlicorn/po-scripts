@@ -1,5 +1,5 @@
 /*
-NovaScript v1.09
+NovaScript v1.10
 By Nightfall Alicorn
 
 */
@@ -34,6 +34,7 @@ SETTINGS.commandSymbolOther = "?";
 SETTINGS.defineBannedArray = [];
 SETTINGS.flashColor = "#ff00ff";
 SETTINGS.friendArray = [];
+SETTINGS.ignoreArray = [];
 SETTINGS.stalkWordArray = [];
 SETTINGS.youTubeStatsEnabled = true;
 
@@ -389,6 +390,51 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
         saveSettings();
         return;
     }
+    // VIEW IGNORE
+    // ******** ******** ********
+    if (command === "ignorelist") {
+        sys.stopEvent();
+        sendBotMsg("Ignore list: " + SETTINGS.ignoreArray.join(", "));
+        return;
+    }
+    // IGNORE
+    // ******** ******** ********
+    if (command === "addignore") {
+        sys.stopEvent();
+        if (commandData === "") {
+            sendBotMsg("Please input a user to ignore.");
+            return;
+        }
+        client.ignore(client.id(commandData), true);
+        if (SETTINGS.ignoreArray.indexOf(commandData.toLowerCase()) !== -1) {
+            sendBotMsg("This user has already been added.");
+            return;
+        }
+        SETTINGS.ignoreArray.push(commandData.toLowerCase());
+        SETTINGS.ignoreArray = SETTINGS.ignoreArray.sort();
+        sendBotMsg((commandData.toLowerCase()) + " has been added to the ignore list.");
+        saveSettings();
+        return;
+    }
+    // DE-IGNORE
+    // ******** ******** ********
+    if (command === "removeignore") {
+        sys.stopEvent();
+        if (commandData === "") {
+            sendBotMsg("Please input a user to de-ignore.");
+            return;
+        }
+        client.ignore(client.id(commandData), false);
+        if (SETTINGS.ignoreArray.indexOf(commandData.toLowerCase()) === -1) {
+            sendBotMsg((commandData.toLowerCase()) + " isn't currently an ignored.");
+            return;
+        }
+        var indexToRemove = SETTINGS.ignoreArray.indexOf(commandData.toLowerCase());
+        SETTINGS.ignoreArray.splice(indexToRemove, 1);
+        sendBotMsg((commandData.toLowerCase()) + " has been bot de-ignore.");
+        saveSettings();
+        return;
+    }
     // COLOR TO HEX
     // ******** ******** ********
     if (command === "hex") {
@@ -534,6 +580,8 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
             saveSettings();
             return;
         }
+        sendBotMsg("Please enter off or on as data input.");
+        return;
     }
     // YOUTUBE STATS
     // ******** ******** ********
@@ -674,6 +722,8 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
         ,"changebotcolo(u)r [hex]: Changes bot color."
         ,"changeflashcolo(u)r [hex]: Changes flash/stalkword color."
         ,"changeownercommandsymbol [symbol]: Changes the script owner's command symbol. Can be 1-3 characters."
+        ,"ignorelist: Displays your ignore list."
+        ,"[add/remove]ignore: Add/Remove someone to the ignore list."
         ,"friend(s): Displays your list of friends and their online status."
         ,"[add/remove]friend: Add/Remove friend."
         ,"stalkword(s): Displays your current stalkwords."
@@ -776,7 +826,10 @@ function loadSettings() {
         sendBotMsg("No settings file found. Save file is now created ready.");
     } else {
         try {
-            SETTINGS = JSON.parse(sys.getFileContent(SETTINGS_FILE_DIRECTORY));
+            // LOAD SETTINGS + ADD MISSING PERIMETERS TO OLD FILE + RUN SETTINGS
+            var objDataLoaded = JSON.parse(sys.getFileContent(SETTINGS_FILE_DIRECTORY));
+            toolFillObject(SETTINGS, objDataLoaded);
+            SETTINGS = objDataLoaded;
             sendBotMsg("Settings loaded.");
         } catch (error) {
             sendBotMsg("Unknown error occurred. The settings file might be corrupted.");
@@ -784,7 +837,24 @@ function loadSettings() {
         }
     }
 }
-
+// FILL OBJECT
+function toolFillObject(from, to) {
+    for (var key in from) {
+        if (from.hasOwnProperty(key)) {
+            if (Object.prototype.toString.call(from[key]) === "[object Object]") {
+                if (!to.hasOwnProperty(key)) {
+                    to[key] = {};
+                    sendBotMsg("Creating missing settings object: " + key);
+                }
+                toolFillObject(from[key], to[key]);
+            }
+            else if (!to.hasOwnProperty(key)) {
+                to[key] = from[key];
+                sendBotMsg("Creating missing settings perimeter: " + key);
+            }
+        }
+    }
+}
 // TOOL - RANDOM PO ELEMENT
 // Tested objects: sys.pokemon, sys.move, sys.item, sys.nature, sys.ability, sys.gender
 function toolRandomPoElement(obj) {
@@ -955,6 +1025,12 @@ PO_CLIENT_SCRIPT = ({
             } else {
                 command = userSentMessage.substr(1).toLowerCase();
             }
+        }
+        // AUTO IGNORE USER
+        // ******** ******** ********
+        if (myName !== userSentName && client.isIgnored(userSentId) === false && SETTINGS.ignoreArray.indexOf(userSentName.toLowerCase()) !== -1) {
+            client.ignore(userSentId, true);
+            return;
         }
         // SERVER NOTIFICATIONS
         // ******** ******** ********
