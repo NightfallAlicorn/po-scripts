@@ -1,5 +1,5 @@
 /*
-NovaScript v1.10
+NovaScript v1.11
 By Nightfall Alicorn
 
 */
@@ -1169,8 +1169,10 @@ PO_CLIENT_SCRIPT = ({
                     var duration = youTubeData.items[0].contentDetails.duration
                             .toLowerCase().substr(2).replace("h", "h ").replace("m", "m ").replace("s", "s");
                     var views = youTubeData.items[0].statistics.viewCount;
+                    var likes = youTubeData.items[0].statistics.likeCount;
+                    var disLikes = youTubeData.items[0].statistics.dislikeCount;
                     // PRINT MESSAGE
-                    sendBotMsg("Title: " + title + ", Author: " + author + ", Comments: " + comments + ", Duration: " + duration + ", Views: " + views, channelId);
+                    sendBotMsg("Title: " + title + ", Author: " + author + ", Comments: " + comments + ", Duration: " + duration + ", Views: " + views + ", Likes: " + likes + ", Dislikes: " + disLikes, channelId);
                 } catch (error) {
                     sendBotMsg("YouTube video data load failed.", channelId);
                 }
