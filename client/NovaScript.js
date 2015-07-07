@@ -1,5 +1,5 @@
 /*
-NovaScript v1.11
+NovaScript v1.12
 By Nightfall Alicorn
 
 */
@@ -873,6 +873,9 @@ function toolRng(minNumber, maxNumber) {
 function toolHtmlEscape(text) {
     return String(text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"));
 }
+function toolStripHtml(text) {
+    return text.replace(/(<([^>]+)>)/ig, "");
+}
 // SPECIAL CHARACTER ESCAPE v1.04
 function toolSpecialCharEscape(text) {
     var x,
@@ -1031,6 +1034,32 @@ PO_CLIENT_SCRIPT = ({
         if (myName !== userSentName && client.isIgnored(userSentId) === false && SETTINGS.ignoreArray.indexOf(userSentName.toLowerCase()) !== -1) {
             client.ignore(userSentId, true);
             return;
+        }
+        if (html === true) {
+            // BLOCK /ME IGNORE ESCAPE
+            var msgPrefix = "<timestamp/> *** <b>";
+            if (fullMessage.indexOf(msgPrefix) !== -1) {
+                var meName = fullMessage.substring(fullMessage.indexOf("<b>") + 3, fullMessage.indexOf("</b>"));
+                if (SETTINGS.ignoreArray.indexOf(meName.toLowerCase()) !== -1) {
+                    sys.stopEvent();
+                    return;
+                }
+            }
+            // BLOCK /RAINBOW IGNORE ESCAPE
+            var msgPrefix = "<timestamp/><b><span style";
+            if (fullMessage.indexOf(msgPrefix) !== -1) {
+                var htmlEscapedMsg = toolStripHtml(fullMessage);
+                if (htmlEscapedMsg.indexOf(": " !== -1)) {
+                    rainbowName = htmlEscapedMsg.substring(0, htmlEscapedMsg.indexOf(": "));
+                    if (rainbowName.charAt(0) === "+") {
+                        rainbowName = rainbowName.substr(1);
+                    }
+                    if (SETTINGS.ignoreArray.indexOf(rainbowName.toLowerCase()) !== -1) {
+                        sys.stopEvent();
+                        return;
+                    }
+                }
+            }
         }
         // SERVER NOTIFICATIONS
         // ******** ******** ********
