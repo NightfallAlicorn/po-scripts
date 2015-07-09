@@ -1,5 +1,5 @@
 /*
-NovaScript v1.12
+NovaScript v1.13
 By Nightfall Alicorn
 
 */
@@ -35,6 +35,7 @@ SETTINGS.defineBannedArray = [];
 SETTINGS.flashColor = "#ff00ff";
 SETTINGS.friendArray = [];
 SETTINGS.ignoreArray = [];
+SETTINGS.ignoreChallenge = false;
 SETTINGS.stalkWordArray = [];
 SETTINGS.youTubeStatsEnabled = true;
 
@@ -565,6 +566,24 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
         }, 3000, false);
         return;
     }
+    // IGNORE CHALLENGES
+    // ******** ******** ********
+    if (command === "ignorechallenge" || command === "ignorechallenges") {
+        if (commandData === "on") {
+            SETTINGS.ignoreChallenge = true;
+            sendBotMsg("Ignore challenges on.");
+            saveSettings();
+            return;
+        }
+        if (commandData === "off") {
+            SETTINGS.ignoreChallenge = false;
+            sendBotMsg("Ignore challenges off.");
+            saveSettings();
+            return;
+        }
+        sendBotMsg("Please enter off or on as data input.");
+        return;
+    }
     // TOURNAMENT ROUND ALERT
     // ******** ******** ********
     if (command === "tourround") {
@@ -690,9 +709,9 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
         var x;
         // OWNER COMMANDS
         var helpArrayOwner = [
-        "#OWNER ONLY COMMANDS:"
+        "#Owner Commands:"
+        ,"**** Helpers ****"
         ,"lookup [user]: Reveals detailed information about the user."
-        ,"--- --- ---"
         ,"gm [message]:  Sends a global message to all channels you are currently in, excluding official ones."
         ,"memberall: Adds all players in channel as members."
         ,"dememberall: Removes all players in channel from members."
@@ -703,20 +722,11 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
         ,"reconnect: Reconnect to the server."
         ,"hex [color name]: Prints the hex of a color name. Doesn't have all colors."
         ,"symbol(s): Displays an input panel of symbols."
-        ,"--- --- ---"
+        ,"**** Official Channel Helpers ****"
         ,"rnghangman: Makes a random hangman game on the official Pokemon Online server."
-        ,"--- --- ---"
-        ,"idle [on/off]: Turns idle on or off."
-        ,"tourround [off/on]: Allows notifications when rounds begin in tournaments."
-        ,"ytdata [off/on]: Disables/Enable YouTube data being showed."
-        ,"--- --- ---"
-        ,"eval [script]: Performs script actions. Use with caution."
-        ,"obj [global/client/client.network()/sys]: Prints list of Pokemon Online's object keys. Own objects can be viewed."
-        ,"webcall [link]: Obtains and prints data from the web."
-        ,"updatescript: Downloads and updates the script from its hosting source."
-        ,"--- --- ---"
+        ,"**** API Tools ****"
         ,"linkshorten [link]: Prints a shorten version of a web link."
-        ,"--- --- ---"
+        ,"**** Settings ****"
         ,"changename [new name]: Changes your name."
         ,"changebotname [new name]: Changes the bot name."
         ,"changebotcolo(u)r [hex]: Changes bot color."
@@ -728,35 +738,37 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
         ,"[add/remove]friend: Add/Remove friend."
         ,"stalkword(s): Displays your current stalkwords."
         ,"[add/remove]stalkword [word]: Add/Remove stalkwords."
+        ,"**** Automation Settings ****"
+        ,"idle [on/off]: Turns idle on or off."
+        ,"ignorechallenge(s) [on/off]: Disables/Enables auto refuse challenges."
+        ,"tourround [off/on]: Allows notifications when rounds begin in tournaments."
+        ,"ytdata [off/on]: Disables/Enable YouTube data being showed."
+        ,"**** Advanced Scripting Tools ****"
+        ,"eval [script]: Performs script actions. Use with caution."
+        ,"obj [global/client/client.network()/sys]: Prints list of Pokemon Online's object keys. Own objects can be viewed."
+        ,"webcall [link]: Obtains and prints data from the web."
+        ,"**** Script Options ****"
+        ,"updatescript: Downloads and updates the script from its hosting source."
         ];
         // OTHER COMMANDS
         var helpArrayOther = [
         "#COMMANDS:"
         ,"N/A"
         ];
-        print("******** ******** HELP ******** ********");
         for (x = 0; x < helpArrayOwner.length; x++) {
-            if (x === 0) {
-                print(helpArrayOwner[x]);
-                continue;
-            }
-            if (helpArrayOwner[x].charAt(0) === "-") {
+            if (["#", "*"].indexOf(helpArrayOwner[x].charAt(0)) !== -1) {
                 print(helpArrayOwner[x]);
                 continue;
             }
             print(SETTINGS.commandSymbolOwner + helpArrayOwner[x]);
         }
-        for (x = 0; x < helpArrayOther.length; x++) {
-            if (x === 0) {
-                print(helpArrayOther[x]);
-                continue;
-            }
-            if (helpArrayOther[x].charAt(0) === "-") {
-                print(helpArrayOther[x]);
-                continue;
-            }
-            print(SETTINGS.commandSymbolOther + helpArrayOther[x]);
-        }
+        // for (x = 0; x < helpArrayOther.length; x++) {
+        //     if (["#", "*"].indexOf(helpArrayOther[x].charAt(0)) !== -1) {
+        //         print(helpArrayOther[x]);
+        //         continue;
+        //     }
+        //     print(SETTINGS.commandSymbolOther + helpArrayOther[x]);
+        // }
         return;
     }
 } // END OF commandHandlerOwner
@@ -1007,6 +1019,14 @@ PO_CLIENT_SCRIPT = ({
             }
         }
     },
+    beforeChallengeReceived: function (challengeId, opponentId, tier, clauses) {
+        // AUTO REFUSE CHALLEANGE
+        // ******** ******** ********
+        if (SETTINGS.ignoreChallenge === true) {
+            sys.stopEvent();
+            return;
+        }
+    }, // END OF beforeChallengeReceived
     beforeChannelMessage: function (fullMessage, channelId, html) {
         // TEMP VARIABLES
         // ******** ******** ********
