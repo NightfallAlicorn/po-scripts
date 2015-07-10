@@ -1,5 +1,5 @@
 /*
-NovaScript v1.13
+NovaScript v1.14
 By Nightfall Alicorn
 
 */
@@ -37,6 +37,7 @@ SETTINGS.friendArray = [];
 SETTINGS.ignoreArray = [];
 SETTINGS.ignoreChallenge = false;
 SETTINGS.stalkWordArray = [];
+SETTINGS.welcomeMessage = "<img src=\"pokemon:num=359-1&gen=6&shiny=false&back=false\">";
 SETTINGS.youTubeStatsEnabled = true;
 
 var PO_CLIENT_SCRIPT;
@@ -688,7 +689,7 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
     }
     // CHANGE OWNER COMMAND SYMBOL
     // ******** ******** ********
-    if (command === "changeownercommandsymbol") {
+    if (command === "changecommandsymbol") {
         if (commandData.length < 1 || commandData.length > 3) {
             sendBotMsg("Please insert a symbol between 1 to 3 characters.");
             return;
@@ -699,6 +700,42 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
         }
         SETTINGS.commandSymbolOwner = commandData;
         sendBotMsg("Command symbol changed to: " + commandData);
+        saveSettings();
+        return;
+    }
+    // CHANGE WELCOME MESSAGE
+    // ******** ******** ********
+    if (command === "changewelcomemessage") {
+        if (commandData === "") {
+            sendBotMsg("Please enter a welcome message. HTML can be used here. Has to have less than 1000 characters. Enter \"reset\" as command data to reset to default setting. Don't forget to close the tags after or it may effect later messages.");
+            print("**** Example HTML Tags ****");
+            sendBotHtmlMsg("&lt;b&gt;<b>bold</b>&lt;/b&gt;");
+            sendBotHtmlMsg("&lt;i&gt;<i>italics</i>&lt;/i&gt;");
+            sendBotHtmlMsg("&lt;u&gt;<u>underline</u>&lt;/u&gt;");
+            sendBotHtmlMsg("&lt;font color=\"#AA00AA\"&gt;<font color=\"#AA00AA\">purple text</font>&lt;/font&gt;");
+            print("**** Example Pokémon ****");
+            sendBotHtmlMsg("<img src=\"pokemon:num=359-1&gen=6&shiny=false&back=false\">");
+            sendBotMsg("<img src=\"pokemon:num=359-1&gen=6&shiny=false&back=false\">");
+            sendBotMsg("Explanation:");
+            sendBotHtmlMsg("num=<b>359</b> is the Pokémon's Pokédex number to use. The <b>-1</b> being the alternative form.");
+            sendBotHtmlMsg("gen=<b>4</b> is the Pokémon's generation sprite to use.");
+            sendBotHtmlMsg("shiny=<b>false</b> is the Pokémon shiny? true/false");
+            sendBotHtmlMsg("back=<b>false</b> use the Pokémon's back sprite? true/false");
+            return;
+        }
+        if (commandData === "reset") {
+            SETTINGS.welcomeMessage = "<img src=\"pokemon:num=359-1&gen=6&shiny=false&back=false\">";
+            sendBotMsg("Welcome message reset to default.");
+            sendBotHtmlMsg(SETTINGS.welcomeMessage);
+            saveSettings();
+            return;
+        }
+        if (commandData.length > 1000) {
+            sendBotMsg("Message is " + commandData.length + " out of 1000 limit. Please make it shorter.");
+            return;
+        }
+        SETTINGS.welcomeMessage = commandData;
+        sendBotHtmlMsg(SETTINGS.welcomeMessage);
         saveSettings();
         return;
     }
@@ -731,7 +768,8 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
         ,"changebotname [new name]: Changes the bot name."
         ,"changebotcolo(u)r [hex]: Changes bot color."
         ,"changeflashcolo(u)r [hex]: Changes flash/stalkword color."
-        ,"changeownercommandsymbol [symbol]: Changes the script owner's command symbol. Can be 1-3 characters."
+        ,"changewelcomemessage [new message]: Changes the welcome message. Enter no command data for help."
+        ,"changecommandsymbol [symbol]: Changes the script owner's command symbol. Can be 1-3 characters."
         ,"ignorelist: Displays your ignore list."
         ,"[add/remove]ignore: Add/Remove someone to the ignore list."
         ,"friend(s): Displays your list of friends and their online status."
@@ -1005,7 +1043,7 @@ client.network().playerLogin.connect(function () {
 });
 
 // INITIZE NOTIFATION
-sendBotHtmlMsg("<img src='pokemon:num=359-1&gen=6'>");
+sendBotHtmlMsg(SETTINGS.welcomeMessage);
 sendBotMsg("Use " + SETTINGS.commandSymbolOwner + "help for commands.");
 
 PO_CLIENT_SCRIPT = ({
