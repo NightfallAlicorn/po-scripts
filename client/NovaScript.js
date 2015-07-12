@@ -1,5 +1,5 @@
 /*
-NovaScript v1.14
+NovaScript
 By Nightfall Alicorn
 
 */
@@ -14,6 +14,7 @@ sys.unsetAllTimers();
 // GLOBAL VARIABLES
 // ******** ******** ********
 var ROOT = this;
+var SCRIPT_VERSION = "v1.15";
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
 var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
 var SCRIPT_URL = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
@@ -739,15 +740,34 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
         saveSettings();
         return;
     }
+    // CREDITS
+    if (command === "credits") {
+        sys.stopEvent();
+        var x;
+        var creditsArray = [
+        "**** Credits ****"
+        ,"Script written by: Nightfall Alicorn"
+        ,"Link Shortener API provided by: Strudels"
+        ,"YouTube Stats API provided by: Crystal Moogle"
+        ];
+        for (x = 0; x < creditsArray.length; x++) {
+            if (["#", "*"].indexOf(creditsArray[x].charAt(0)) !== -1) {
+                print(creditsArray[x]);
+                continue;
+            }
+            print("~" + creditsArray[x]);
+        }
+        return;
+    }
     // OWNER HELP CONSOLE
     // ******** ******** ********
     if ((command === "help") || (command === "commands")) {
         sys.stopEvent();
         var x;
+        printHtml("<font color='#005000'><timestamp/><b>NovaScript " + SCRIPT_VERSION + " Commands</b></font>");
         // OWNER COMMANDS
         var helpArrayOwner = [
-        "#Owner Commands:"
-        ,"**** Helpers ****"
+        "**** Helpers ****"
         ,"lookup [user]: Reveals detailed information about the user."
         ,"gm [message]:  Sends a global message to all channels you are currently in, excluding official ones."
         ,"memberall: Adds all players in channel as members."
@@ -783,10 +803,11 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
         ,"ytdata [off/on]: Disables/Enable YouTube data being showed."
         ,"**** Advanced Scripting Tools ****"
         ,"eval [script]: Performs script actions. Use with caution."
-        ,"obj [global/client/client.network()/sys]: Prints list of Pokemon Online's object keys. Own objects can be viewed."
+        ,"obj [ROOT/client/client.network()/sys]: Prints list of Pokemon Online's object keys. Own objects can be viewed."
         ,"webcall [link]: Obtains and prints data from the web."
         ,"**** Script Options ****"
         ,"updatescript: Downloads and updates the script from its hosting source."
+        ,"credits: Display the credits."
         ];
         // OTHER COMMANDS
         var helpArrayOther = [
@@ -1208,7 +1229,7 @@ PO_CLIENT_SCRIPT = ({
                 printHtml("<font color='" + SETTINGS.botColor + "'><timestamp/><b>" + userSentName + ":</b></font> " + newMessage, channelId);
             }
             if (userSentId !== -1) { // USER MESSAGE
-                userSentNameFormatted = userSentName;
+                var userSentNameFormatted = userSentName;
                 // SERVER AUTH CHECK
                 var serverAuthSymbol = "";
                 if (userSentAuth > 0) {
