@@ -14,7 +14,7 @@ sys.unsetAllTimers();
 // GLOBAL VARIABLES
 // ******** ******** ********
 var ROOT = this;
-var SCRIPT_VERSION = "v1.15";
+var SCRIPT_VERSION = "v1.16";
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
 var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
 var SCRIPT_URL = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
@@ -30,8 +30,8 @@ SETTINGS.alertTourRound = false;
 SETTINGS.botName = "ClientBot";
 SETTINGS.botChannelArray = [];
 SETTINGS.botColor = "#800080";
-SETTINGS.commandSymbolOwner = "-";
-SETTINGS.commandSymbolOther = "?";
+SETTINGS.commandSymbolPrivate = "-";
+SETTINGS.commandSymbolPublic = "?";
 SETTINGS.defineBannedArray = [];
 SETTINGS.flashColor = "#ff00ff";
 SETTINGS.friendArray = [];
@@ -44,7 +44,7 @@ SETTINGS.youTubeStatsEnabled = true;
 var PO_CLIENT_SCRIPT;
 
 // COMMAND HANDLER OWNER
-function commandHandlerOwner(command, commandData, channelId, channelName) {
+function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // LOOKUP
     // ******** ******** ********
     if (command === "lookup") {
@@ -114,9 +114,9 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
         }
         return;
     }
-    // GET CHANNEL MEMBERS
+    // CHANNEL PLAYERS
     // ******** ******** ********
-    if ((command === "channelplayer") || (command === "channelplayers")) {
+    if (command === "channelplayer" || command === "channelplayers") {
         sys.stopEvent();
         var x;
         var channelPlayerIdArray = client.channel(channelId).players();
@@ -124,8 +124,7 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
         for (x = 0; x < channelPlayerIdArray.length; x++) {
             channelPlayerNameArray[x] = client.name(channelPlayerIdArray[x]);
         }
-        var newMessage = channelPlayerNameArray.toString().replace(/\,/g, ", ");
-        sendBotMsg("The users that are currently in " + channelName + " are: " + newMessage);
+        sendBotMsg("There are " + channelPlayerNameArray.length + " users that are currently in " + channelName + ". The users are: " + channelPlayerNameArray.join(", "));
         return;
     }
     // MEMBER ALL
@@ -699,7 +698,7 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
             sendBotMsg("The command symbol cannot contain spaces.");
             return;
         }
-        SETTINGS.commandSymbolOwner = commandData;
+        SETTINGS.commandSymbolPrivate = commandData;
         sendBotMsg("Command symbol changed to: " + commandData);
         saveSettings();
         return;
@@ -819,24 +818,24 @@ function commandHandlerOwner(command, commandData, channelId, channelName) {
                 print(helpArrayOwner[x]);
                 continue;
             }
-            print(SETTINGS.commandSymbolOwner + helpArrayOwner[x]);
+            print(SETTINGS.commandSymbolPrivate + helpArrayOwner[x]);
         }
         // for (x = 0; x < helpArrayOther.length; x++) {
         //     if (["#", "*"].indexOf(helpArrayOther[x].charAt(0)) !== -1) {
         //         print(helpArrayOther[x]);
         //         continue;
         //     }
-        //     print(SETTINGS.commandSymbolOther + helpArrayOther[x]);
+        //     print(SETTINGS.commandSymbolPublic + helpArrayOther[x]);
         // }
         return;
     }
-} // END OF commandHandlerOwner
+} // END OF commandHandlerPrivate
 
 // COMMAND HANDLER OTHER
-function commandHandlerOther(command, commandData, myName, userSentName, userSentMessage, userSentId, userSentAuth, userSentColor, channelId, channelName) {
+function commandHandlerPublic(command, commandData, myName, userSentName, userSentMessage, userSentId, userSentAuth, userSentColor, channelId, channelName) {
     // ADD BOTS YOU WANT OTHERS TO USE HERE
     
-} // END OF commandHandlerOther
+} // END OF commandHandlerPublic
 
 // PRINT
 function print(message, channelId) {
@@ -1035,7 +1034,7 @@ function toolPoCommandTimeConvert(input) {
         return "1 day";
     }
 }
-// RETURN CHANNEL PLAYER NAME LIST ARRAY
+// TOOL - RETURN CHANNEL PLAYER NAME LIST ARRAY
 // ******** ******** ********
 function toolChannelPlayerNamesArray(channelId) {
     var x,
@@ -1065,7 +1064,7 @@ client.network().playerLogin.connect(function () {
 
 // INITIZE NOTIFATION
 sendBotHtmlMsg(SETTINGS.welcomeMessage);
-sendBotMsg("Use " + SETTINGS.commandSymbolOwner + "help for commands.");
+sendBotMsg("Use " + SETTINGS.commandSymbolPrivate + "help for commands.");
 
 PO_CLIENT_SCRIPT = ({
     onPlayerReceived: function (userIdReceived) {
@@ -1099,7 +1098,7 @@ PO_CLIENT_SCRIPT = ({
         // COMMAND + COMMAND DATA SETUP
         // ******** ******** ********
         var command = "", commandData = "";
-        if (SETTINGS.commandSymbolOther.indexOf(userSentMessage.charAt(0)) !== -1) {
+        if (SETTINGS.commandSymbolPublic.indexOf(userSentMessage.charAt(0)) !== -1) {
             var split = userSentMessage.indexOf(" ");
             if (split !== -1) {
                 command = userSentMessage.substring(1, split).toLowerCase();
@@ -1289,7 +1288,7 @@ PO_CLIENT_SCRIPT = ({
         // CALL OTHER COMMAND HANDLER
         // ******** ******** ********
         try {
-            commandHandlerOther(command, commandData, myName, userSentName, userSentMessage, userSentId, userSentAuth, userSentColor, channelId, channelName);
+            commandHandlerPublic(command, commandData, myName, userSentName, userSentMessage, userSentId, userSentAuth, userSentColor, channelId, channelName);
         } catch (error) {
             if (HAD_OTHER_BOT_ERROR === false) {
                 HAD_OTHER_BOT_ERROR = true;
@@ -1297,7 +1296,7 @@ PO_CLIENT_SCRIPT = ({
                 if (client.ownName() !== userSentName) {
                     sendChanBotMsg(channelId, "Script error occurred. The bot owner been alerted about it.");
                 }
-                sendBotMsg("commandHandlerOther error on line " + error.lineNumber + ", " + error.message + ", to prevent client crashes only one error will be given");
+                sendBotMsg("commandHandlerPublic error on line " + error.lineNumber + ", " + error.message + ", to prevent client crashes only one error will be given");
             }
         }
     }, // END OF beforeChannelMessage
@@ -1305,13 +1304,13 @@ PO_CLIENT_SCRIPT = ({
         // COMMAND + COMMAND DATA SETUP
         // ******** ******** ********
         var command = "", commandData = "";
-        if (SETTINGS.commandSymbolOwner === sentMessage.substring(0, SETTINGS.commandSymbolOwner.length)) {
+        if (SETTINGS.commandSymbolPrivate === sentMessage.substring(0, SETTINGS.commandSymbolPrivate.length)) {
             var split = sentMessage.indexOf(" ");
             if (split !== -1) {
-                command = sentMessage.substring(SETTINGS.commandSymbolOwner.length, split).toLowerCase();
+                command = sentMessage.substring(SETTINGS.commandSymbolPrivate.length, split).toLowerCase();
                 commandData = sentMessage.substr(split + 1);
             } else {
-                command = sentMessage.substr(SETTINGS.commandSymbolOwner.length).toLowerCase();
+                command = sentMessage.substr(SETTINGS.commandSymbolPrivate.length).toLowerCase();
             }
         }
         // PREVENT OWNER COMMANDS BEING SEEN, EVEN TYPO ONES
@@ -1322,9 +1321,9 @@ PO_CLIENT_SCRIPT = ({
         // CALL OWNER COMMAND HANDLER
         // ******** ******** ********
         try {
-            commandHandlerOwner(command, commandData, channelId, client.channelName(channelId));
+            commandHandlerPrivate(command, commandData, channelId, client.channelName(channelId));
         } catch (error) {
-            sendBotMsg("commandHandlerOwner error on line " + error.lineNumber + ", " + error.message);
+            sendBotMsg("commandHandlerPrivate error on line " + error.lineNumber + ", " + error.message);
         }
     } // END OF beforeSendMessage
 });
