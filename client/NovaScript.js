@@ -14,7 +14,7 @@ sys.unsetAllTimers();
 // GLOBAL VARIABLES
 // ******** ******** ********
 var ROOT = this;
-var SCRIPT_VERSION = "v1.17";
+var SCRIPT_VERSION = "v1.18";
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
 var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
 var SCRIPT_URL = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
@@ -803,7 +803,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
         ,"ytdata [off/on]: Disables/Enable YouTube data being showed."
         ,"**** Advanced Scripting Tools ****"
         ,"eval [script]: Performs script actions. Use with caution."
-        ,"obj [ROOT/client/client.network()/sys]: Prints list of Pokemon Online's object keys. Own objects can be viewed."
+        ,"obj [ROOT/SETTINGS/client/client.network()/sys]: Prints list of Pokemon Online's object keys. Own objects can be viewed."
         ,"webcall [link]: Obtains and prints data from the web."
         ,"**** Script Options ****"
         ,"updatescript: Downloads and updates the script from its hosting source."
