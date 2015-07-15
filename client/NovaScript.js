@@ -14,12 +14,12 @@ sys.unsetAllTimers();
 // GLOBAL VARIABLES
 // ******** ******** ********
 var ROOT = this;
-var SCRIPT_VERSION = "v1.18";
+var SCRIPT_VERSION = "v1.19";
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
 var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
 var SCRIPT_URL = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
 var INIT = false;
-var HAD_OTHER_BOT_ERROR = false;
+var PRIVATE_COMMAND_ERROR_OCCURRED = false;
 
 var MULTI_COMMAND_WORKING = false;
 var TIMER_MULTI_COMMAND_LOOP;
@@ -830,6 +830,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
         // }
         return;
     }
+    return false;
 } // END OF commandHandlerPrivate
 
 // COMMAND HANDLER OTHER
@@ -1286,14 +1287,14 @@ PO_CLIENT_SCRIPT = ({
                 }
             }
         }());
-        // CALL OTHER COMMAND HANDLER
+        // CALL PUBLIC COMMAND HANDLER
         // ******** ******** ********
         try {
             commandHandlerPublic(command, commandData, myName, userSentName, userSentMessage, userSentId, userSentAuth, userSentColor, channelId, channelName);
         } catch (error) {
-            if (HAD_OTHER_BOT_ERROR === false) {
-                HAD_OTHER_BOT_ERROR = true;
-                // ALERT NON-BOT OWNER ON ERROR BEEN REPORTED
+            if (PRIVATE_COMMAND_ERROR_OCCURRED === false) {
+                PRIVATE_COMMAND_ERROR_OCCURRED = true;
+                // ALERT CHANNEL USER THAT ERROR HAD BEEN REPORTED
                 if (client.ownName() !== userSentName) {
                     sendChanBotMsg(channelId, "Script error occurred. The bot owner been alerted about it.");
                 }
@@ -1314,15 +1315,18 @@ PO_CLIENT_SCRIPT = ({
                 command = sentMessage.substr(SETTINGS.commandSymbolPrivate.length).toLowerCase();
             }
         }
-        // PREVENT OWNER COMMANDS BEING SEEN, EVEN TYPO ONES
+        // PREVENT PRIATE COMMANDS BEING SEEN, EVEN TYPO ONES
         // ******** ******** ********
         if (command.length > 0) {
             sys.stopEvent();
         }
-        // CALL OWNER COMMAND HANDLER
+        // CALL PRIVATE COMMAND HANDLER
         // ******** ******** ********
         try {
-            commandHandlerPrivate(command, commandData, channelId, client.channelName(channelId));
+            var isPrivateCommand = commandHandlerPrivate(command, commandData, channelId, client.channelName(channelId));
+            if (isPrivateCommand === false && command.length > 0) {
+                sendBotMsg("The bot command " + command + " doesn't exist.");
+            }
         } catch (error) {
             sendBotMsg("commandHandlerPrivate error on line " + error.lineNumber + ", " + error.message);
         }
