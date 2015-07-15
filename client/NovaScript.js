@@ -14,7 +14,7 @@ sys.unsetAllTimers();
 // GLOBAL VARIABLES
 // ******** ******** ********
 var ROOT = this;
-var SCRIPT_VERSION = "v1.16";
+var SCRIPT_VERSION = "v1.17";
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
 var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
 var SCRIPT_URL = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
@@ -748,6 +748,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
         ,"Script written by: Nightfall Alicorn"
         ,"Link Shortener API provided by: Strudels"
         ,"YouTube Stats API provided by: Crystal Moogle"
+        ,"Contributed suggestions: Elize Lutus, SongSing"
         ];
         for (x = 0; x < creditsArray.length; x++) {
             if (["#", "*"].indexOf(creditsArray[x].charAt(0)) !== -1) {
