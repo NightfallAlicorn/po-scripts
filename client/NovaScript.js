@@ -14,7 +14,7 @@ sys.unsetAllTimers();
 // GLOBAL VARIABLES
 // ******** ******** ********
 var ROOT = this;
-var SCRIPT_VERSION = "v1.20";
+var SCRIPT_VERSION = "v1.21";
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
 var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
 var SCRIPT_URL = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
@@ -29,7 +29,7 @@ var SETTINGS = {};
 SETTINGS.alertTourRound = false;
 SETTINGS.botName = "ClientBot";
 SETTINGS.botChannelArray = [];
-SETTINGS.botColor = "#800080";
+SETTINGS.botColor = "#200070";
 SETTINGS.commandSymbolPrivate = "-";
 SETTINGS.commandSymbolPublic = "?";
 SETTINGS.defineBannedArray = [];
@@ -37,6 +37,7 @@ SETTINGS.flashColor = "#ff00ff";
 SETTINGS.friendArray = [];
 SETTINGS.ignoreArray = [];
 SETTINGS.ignoreChallenge = false;
+SETTINGS.removeCaps = false;
 SETTINGS.stalkWordArray = [];
 SETTINGS.welcomeMessage = "<img src=\"pokemon:num=359-1&gen=6&shiny=false&back=false\">";
 SETTINGS.youTubeStatsEnabled = true;
@@ -573,17 +574,35 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     if (command === "ignorechallenge" || command === "ignorechallenges") {
         if (commandData === "on") {
             SETTINGS.ignoreChallenge = true;
-            sendBotMsg("Ignore challenges on.");
+            sendBotMsg("Ignore challenges is on.");
             saveSettings();
             return;
         }
         if (commandData === "off") {
             SETTINGS.ignoreChallenge = false;
-            sendBotMsg("Ignore challenges off.");
+            sendBotMsg("Ignore challenges is off.");
             saveSettings();
             return;
         }
-        sendBotMsg("Please enter off or on as data input.");
+        sendBotMsg("Ignore challenges is currently " + (SETTINGS.ignoreChallenge === true ? "on" : "off") + ".");
+        return;
+    }
+    // REMOVE CAPS
+    // ******** ******** ********
+    if (command === "removecaps") {
+        if (commandData === "on") {
+            SETTINGS.removeCaps = true;
+            sendBotMsg("Remove caps is on.");
+            saveSettings();
+            return;
+        }
+        if (commandData === "off") {
+            SETTINGS.removeCaps = false;
+            sendBotMsg("Remove caps is off.");
+            saveSettings();
+            return;
+        }
+        sendBotMsg("Remove caps is currently " + (SETTINGS.removeCaps === true ? "on" : "off") + ".");
         return;
     }
     // TOURNAMENT ROUND ALERT
@@ -601,7 +620,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
             saveSettings();
             return;
         }
-        sendBotMsg("Please enter off or on as data input.");
+        sendBotMsg("Tournaments round notification is current " + (SETTINGS.alertTourRound === true ? "on" : "off") + ".");
         return;
     }
     // YOUTUBE STATS
@@ -610,23 +629,23 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
         if (commandData === "on") {
             SETTINGS.youTubeStatsEnabled = true;
             saveSettings();
-            sendBotMsg("YouTube stats will now be printed.");
+            sendBotMsg("YouTube data will now be printed.");
             return;
         }
         if (commandData === "off") {
             SETTINGS.youTubeStatsEnabled = false;
             saveSettings();
-            sendBotMsg("YouTube stats won't be printed now.");
+            sendBotMsg("YouTube data won't be printed now.");
             return;
         }
-        sendBotMsg("Use \"off\" or \"on\" as command data.");
+        sendBotMsg("YouTube data is currently " + (SETTINGS.youTubeStatsEnabled === true ? "on" : "off") + ".");
         return;
     }
     // CHANGE BOT NAME
     // ******** ******** ********
     if (command === "changebotname") {
         if (commandData === "") {
-            sendBotMsg("Enter a new bot name.");
+            sendBotMsg("Current bot name is " + SETTINGS.botName  + ". Enter a new bot name after the command to change it.");
             return;
         }
         if (commandData.length > 20) {
@@ -642,15 +661,15 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // ******** ******** ********
     if (command === "changebotcolor" || command === "changebotcolour") {
         if (commandData === "") {
-            sendBotMsg("Enter a new bot color. The color is rgb hex format.");
+            sendBotMsg("Current bot colo(u)r is " + SETTINGS.botColor + ". Enter a new bot colo(u)r after the command to change it. The colo(u)r can be name or rgb hex.");
             return;
         }
         if (sys.validColor(commandData) === false) {
-            sendBotMsg("Invalid hex color. Use -hex [color name] to help pick a color.");
+            sendBotMsg("Invalid hex colo(u)r. Use -hex [colo(u)r name] to help pick a colo(u)r.");
             return;
         }
         SETTINGS.botColor = commandData;
-        sendBotMsg("Bot color changed to " + commandData);
+        sendBotMsg("Bot colo(u)r changed to " + commandData);
         saveSettings();
         return;
     }
@@ -658,15 +677,15 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // ******** ******** ********
     if (command === "changeflashcolor" || command === "changeflashcolour") {
         if (commandData === "") {
-            sendBotMsg("Enter a new flash/stalkword color. The color is rgb hex format.");
+            sendBotMsg("Current flash colo(u)r is " + SETTINGS.flashColor + ". Enter a new flash/stalkword colo(u)r. The colo(u)r can be name or rgb hex.");
             return;
         }
         if (sys.validColor(commandData) === false) {
-            sendBotMsg("Invalid hex color. Use -hex [color name] to help pick a color.");
+            sendBotMsg("Invalid hex colo(u)r. Use -hex [colo(u)r name] to help pick a colo(u)r.");
             return;
         }
         SETTINGS.flashColor = commandData;
-        sendBotMsg("Flash/Stalkword color changed to " + commandData);
+        sendBotMsg("Flash/Stalkword colo(u)r changed to " + commandData);
         saveSettings();
         return;
     }
@@ -684,7 +703,28 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
             sys.changeScript(scriptData, false);
             sendBotMsg("Script updated.");
         } catch (error) {
-            sendBotMsg("script update error on line " + error.lineNumber + ", " + error.message);
+            sendBotMsg("Script update error on line " + error.lineNumber + ", " + error.message);
+        }
+        return;
+    }
+    // UPDATE SCRIPT
+    // ******** ******** ********
+    if (command === "uninstallscript") {
+        if (sys.isSafeScripts() === true) {
+            sendBotMsg("This command requires Safe Scripts to be enabled.");
+            return;
+        }
+        if (commandData !== "confirm") {
+            sendBotMsg("Warning: This will uninstall the script. You would need to re-download the script or another after this. Enter \"confirm\" without the double quotes to run this command.");
+            return;
+        }
+        sendBotMsg("Uninstalling script...");
+        try {
+            sys.writeToFile(sys.scriptsFolder + "scripts.js", "");
+            sys.changeScript("", false);
+            sendBotMsg("Script uninstalled.");
+        } catch (error) {
+            sendBotMsg("Script uninstall error on line " + error.lineNumber + ", " + error.message);
         }
         return;
     }
@@ -799,14 +839,16 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
         ,"[add/remove]stalkword [word]: Add/Remove stalkwords."
         ,"**** Automation Settings ****"
         ,"idle [on/off]: Turns idle on or off."
-        ,"ignorechallenge(s) [on/off]: Disables/Enables auto refuse challenges."
+        ,"ignorechallenge(s) [on/off]: Auto refuse challenges even when not idle."
+        ,"removecaps [off/on]: Remove caps from your messages. This doesn't include bot commands."
         ,"tourround [off/on]: Allows notifications when rounds begin in tournaments."
-        ,"ytdata [off/on]: Disables/Enable YouTube data being showed."
+        ,"ytdata [off/on]: Show YouTube of links in channel."
         ,"**** Advanced Scripting Tools ****"
         ,"eval [script]: Performs script actions. Use with caution."
         ,"obj [ROOT/SETTINGS/client/client.network()/sys]: Prints list of Pokemon Online's object keys. Own objects can be viewed."
         ,"webcall [link]: Obtains and prints data from the web."
         ,"**** Script Options ****"
+        ,"uninstallscript: Removes this script."
         ,"updatescript: Downloads and updates the script from its hosting source."
         ,"credits: Display the credits."
         ];
@@ -909,6 +951,10 @@ function loadSettings() {
             sendBotMsg("Debug information: " + error);
         }
     }
+}
+// IS LOWER CASE CHECK
+function isLowerCased(text) {
+    return text.toLowerCase() === text;
 }
 // FILL OBJECT
 function toolFillObject(from, to) {
@@ -1330,6 +1376,12 @@ PO_CLIENT_SCRIPT = ({
             }
         } catch (error) {
             sendBotMsg("commandHandlerPrivate error on line " + error.lineNumber + ", " + error.message);
+        }
+        // ANTI CAPS
+        // ******** ******** ********
+        if (SETTINGS.removeCaps === true && isLowerCased(sentMessage) === false && command.length === 0) {
+            sys.stopEvent();
+            sendChanMsg(channelId, sentMessage.toLowerCase());
         }
     } // END OF beforeSendMessage
 });
