@@ -14,7 +14,7 @@ sys.unsetAllTimers();
 // GLOBAL VARIABLES
 // ******** ******** ********
 var ROOT = this;
-var SCRIPT_VERSION = "v1.21";
+var SCRIPT_VERSION = "v1.22";
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
 var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
 var SCRIPT_URL = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
@@ -246,6 +246,24 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
             return;
         }
         sendBotMsg("No Multi Command currently running.");
+        return;
+    }
+    // PM
+    // ******** ******** ********
+    if (command === "pm") {
+        if (commandData === "") {
+            sendBotMsg("Please enter the name of the user you want to PM.");
+            return;
+        }
+        if (client.playerExist(client.id(commandData)) === false) {
+            sendBotMsg("The user isn't current logged on.");
+            return;
+        }
+        if (client.ownName().toLowerCase() === commandData.toLowerCase()) {
+            sendBotMsg("You cannot PM yourself.");
+            return;
+        }
+        client.startPM(client.id(commandData));
         return;
     }
     // RECONNECT
@@ -817,6 +835,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
         ,"channelplayer(s): Prints a list of names of players in channel."
         ,"mc [command]:[name1, name2, name3...]: Performs a multi command on a list of users, separated by comma and space, at once."
         ,"mcstop: Stops a current Multi Command running."
+        ,"pm [user]: PM a user."
         ,"reconnect: Reconnect to the server."
         ,"hex [color name]: Prints the hex of a color name. Doesn't have all colors."
         ,"symbol(s): Displays an input panel of symbols."
