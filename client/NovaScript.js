@@ -14,7 +14,7 @@ sys.unsetAllTimers();
 // GLOBAL VARIABLES
 // ******** ******** ********
 var ROOT = this;
-var SCRIPT_VERSION = "v1.22";
+var SCRIPT_VERSION = "v1.23";
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
 var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
 var SCRIPT_URL = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
@@ -256,7 +256,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
             return;
         }
         if (client.playerExist(client.id(commandData)) === false) {
-            sendBotMsg("The user isn't current logged on.");
+            sendBotMsg("The user isn't currently logged on.");
             return;
         }
         if (client.ownName().toLowerCase() === commandData.toLowerCase()) {
@@ -499,6 +499,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
                 return;
             }
             sendBotMsg("Link shortened: " + getBitlyWebcall);
+            return;
         } catch (error) {
             sendBotMsg(error);
             return;
