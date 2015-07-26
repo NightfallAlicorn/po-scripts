@@ -14,12 +14,12 @@ sys.unsetAllTimers();
 // GLOBAL VARIABLES
 // ******** ******** ********
 var ROOT = this;
-var SCRIPT_VERSION = "v1.24";
+var SCRIPT_VERSION = "v1.25";
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
 var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
 var SCRIPT_URL = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
 var INIT = false;
-var PRIVATE_COMMAND_ERROR_OCCURRED = false;
+var PUBLIC_COMMAND_ERROR_OCCURRED = false;
 
 var MULTI_COMMAND_WORKING = false;
 var TIMER_MULTI_COMMAND_LOOP;
@@ -767,7 +767,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // ******** ******** ********
     if (command === "changewelcomemessage") {
         if (commandData === "") {
-            sendBotMsg("Please enter a welcome message. HTML can be used here. Has to have less than 1000 characters. Enter \"reset\" as command data to reset to default setting. Don't forget to close the tags after or it may effect later messages.");
+            sendBotMsg("Please enter a welcome message. HTML can be used here but don't forget to close the tags. Has to have less than 1000 characters. Enter \"none\" for no welcome message. Enter \"reset\" as command data to reset to default setting.");
             print("**** Example HTML Tags ****");
             sendBotHtmlMsg("&lt;b&gt;<b>bold</b>&lt;/b&gt;");
             sendBotHtmlMsg("&lt;i&gt;<i>italics</i>&lt;/i&gt;");
@@ -825,7 +825,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     if ((command === "help") || (command === "commands")) {
         sys.stopEvent();
         var x;
-        printHtml("<font color='#005000'><timestamp/><b>NovaScript " + SCRIPT_VERSION + " Commands</b></font>");
+        printHtml("<font color='#005000'><timestamp/><b>Nova's Client Script " + SCRIPT_VERSION + " Commands</b></font>");
         // OWNER COMMANDS
         var helpArrayOwner = [
         "**** Helpers ****"
@@ -850,7 +850,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
         ,"changebotname [new name]: Changes the bot name."
         ,"changebotcolo(u)r [hex]: Changes bot color."
         ,"changeflashcolo(u)r [hex]: Changes flash/stalkword color."
-        ,"changewelcomemessage [new message]: Changes the welcome message. Enter no command data for help."
+        ,"changewelcomemessage [new message/none/reset]: Changes the welcome message. Enter no command data for help."
         ,"changecommandsymbol [symbol]: Changes the script owner's command symbol. Can be 1-3 characters."
         ,"ignorelist: Displays your ignore list."
         ,"[add/remove]ignore: Add/Remove someone to the ignore list."
@@ -1133,7 +1133,10 @@ client.network().playerLogin.connect(function () {
 });
 
 // INITIZE NOTIFATION
-sendBotHtmlMsg(SETTINGS.welcomeMessage);
+if (SETTINGS.welcomeMessage !== "none") {
+    sendBotHtmlMsg(SETTINGS.welcomeMessage);
+}
+sendBotHtmlMsg("Nova's Client Script " + SCRIPT_VERSION);
 sendBotMsg("Use " + SETTINGS.commandSymbolPrivate + "help for commands.");
 
 PO_CLIENT_SCRIPT = ({
@@ -1360,8 +1363,8 @@ PO_CLIENT_SCRIPT = ({
         try {
             commandHandlerPublic(command, commandData, myName, userSentName, userSentMessage, userSentId, userSentAuth, userSentColor, channelId, channelName);
         } catch (error) {
-            if (PRIVATE_COMMAND_ERROR_OCCURRED === false) {
-                PRIVATE_COMMAND_ERROR_OCCURRED = true;
+            if (PUBLIC_COMMAND_ERROR_OCCURRED === false) {
+                PUBLIC_COMMAND_ERROR_OCCURRED = true;
                 // ALERT CHANNEL USER THAT ERROR HAD BEEN REPORTED
                 if (client.ownName() !== userSentName) {
                     sendChanBotMsg(channelId, "Script error occurred. The bot owner been alerted about it.");
