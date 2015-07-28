@@ -14,7 +14,7 @@ sys.unsetAllTimers();
 // GLOBAL VARIABLES
 // ******** ******** ********
 var ROOT = this;
-var SCRIPT_VERSION = "v1.25";
+var SCRIPT_VERSION = "v1.26";
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
 var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
 var SCRIPT_URL = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
@@ -49,7 +49,6 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // LOOKUP
     // ******** ******** ********
     if (command === "lookup") {
-        sys.stopEvent();
         if (commandData === "") {
             sendBotMsg("Please enter a user name.");
             return;
@@ -98,7 +97,6 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // GLOBAL MESSAGE
     // ******** ******** ********
     if (command === "gm") {
-        sys.stopEvent();
         var x;
         var globalMessage = "[Global Message] " + commandData;
         var myChannelArray = client.myChannels();
@@ -118,7 +116,6 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // CHANNEL PLAYERS
     // ******** ******** ********
     if (command === "channelplayer" || command === "channelplayers") {
-        sys.stopEvent();
         var x;
         var channelPlayerIdArray = client.channel(channelId).players();
         var channelPlayerNameArray = [];
@@ -131,7 +128,6 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // MEMBER ALL
     // ******** ******** ********
     if (command === "memberall") {
-        sys.stopEvent();
         var x;
         var botName = SETTINGS.botName.memberall + ": ";
         var channelPlayerIdArray = client.channel(channelId).players();
@@ -151,7 +147,6 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // DEMEMBER ALL
     // ******** ******** ********
     if (command === "dememberall") {
-        sys.stopEvent();
         var x;
         var channelPlayerIdArray = client.channel(channelId).players();
         var channelPlayerNameArray = [];
@@ -170,7 +165,6 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // KICK ALL
     // ******** ******** ********
     if (command === "kickall") {
-        sys.stopEvent();
         var x;
         if (commandData === "") {
             sendBotMsg("Warning: This will kick everyone from the channel. Please enter \"confirm\", without the double-quotes, as data input after the command to perform the action.");
@@ -197,7 +191,6 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // MULTI COMMAND
     // ******** ******** ********
     if (command === "mc") {
-        sys.stopEvent();
         // CHECK IF ALREADY BUSY
         if (MULTI_COMMAND_WORKING === true) {
             sendBotMsg("Already busy performing a Multi Command.");
@@ -238,7 +231,6 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // MULTI COMMAND STOP
     // ******** ******** ********
     if (command === "mcstop") {
-        sys.stopEvent();
         if (MULTI_COMMAND_WORKING === true) {
             sys.unsetTimer(TIMER_MULTI_COMMAND_LOOP);
             MULTI_COMMAND_WORKING = false;
@@ -269,14 +261,12 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // RECONNECT
     // ******** ******** ********
     if (command === "reconnect") {
-        sys.stopEvent();
         client.reconnect();
         return;
     }
     // IDLE
     // ******** ******** ********
     if (command === "idle") {
-        sys.stopEvent();
         if (commandData === "on") {
             client.goAway(true);
             sendBotMsg("Idling on.");
@@ -293,7 +283,6 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // CHANGE NAME
     // ******** ******** ********
     if (command === "changename") {
-        sys.stopEvent();
         if (commandData === "") {
             sendBotMsg("Please enter a name.");
             return;
@@ -321,7 +310,6 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // VIEW FRIENDS LIST
     // ******** ******** ********
     if (command === "friends" || command === "friend") {
-        sys.stopEvent();
         var x, outputArray = [];
         for (x = 0; x < SETTINGS.friendArray.length; x++) {
             if (client.playerExist(client.id(SETTINGS.friendArray[x])) === true) {
@@ -336,7 +324,6 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // ADD BOT AUTH
     // ******** ******** ********
     if (command === "addfriend") {
-        sys.stopEvent();
         if (commandData === "") {
             sendBotMsg("Please input a user to add to friends.");
             return;
@@ -354,7 +341,6 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // REMOVE BOT AUTH
     // ******** ******** ********
     if (command === "removefriend") {
-        sys.stopEvent();
         if (commandData === "") {
             sendBotMsg("Please input a user to de-friend.");
             return;
@@ -372,14 +358,12 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // VIEW STALKWORD
     // ******** ******** ********
     if (command === "stalkwords" || command === "stalkword") {
-        sys.stopEvent();
         sendBotMsg("Stalkwords: " + SETTINGS.stalkWordArray.join(", "));
         return;
     }
     // ADD STALKWORD
     // ******** ******** ********
     if (command === "addstalkword") {
-        sys.stopEvent();
         if (commandData === "") {
             sendBotMsg("Please input a stalkword after the command to add.");
             return;
@@ -397,7 +381,6 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // REMOVE STALKWORD
     // ******** ******** ********
     if (command === "removestalkword") {
-        sys.stopEvent();
         if (commandData === "") {
             sendBotMsg("Please input a stalkword after command to remove.");
             return;
@@ -415,14 +398,12 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // VIEW IGNORE
     // ******** ******** ********
     if (command === "ignorelist") {
-        sys.stopEvent();
         sendBotMsg("Ignore list: " + SETTINGS.ignoreArray.join(", "));
         return;
     }
     // IGNORE
     // ******** ******** ********
     if (command === "addignore") {
-        sys.stopEvent();
         if (commandData === "") {
             sendBotMsg("Please input a user to ignore.");
             return;
@@ -441,7 +422,6 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // DE-IGNORE
     // ******** ******** ********
     if (command === "removeignore") {
-        sys.stopEvent();
         if (commandData === "") {
             sendBotMsg("Please input a user to de-ignore.");
             return;
@@ -460,7 +440,6 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // COLOR TO HEX
     // ******** ******** ********
     if (command === "hex") {
-        sys.stopEvent();
         if (commandData === "") {
             sendBotMsg("Please enter a color name. Note this doesn't have every color to convert to hex.");
             return;
@@ -471,7 +450,6 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // SYMBALS
     // ******** ******** ********
     if ((command === "symbol") || (command === "symbols")) {
-        sys.stopEvent();
         var x;
         var symbolArray = [
             "♩", "♪", "♫", "♬",// MUSIC NOTES
@@ -487,7 +465,6 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // LINK SHORTEN API
     // ******** ******** ********
     if (command === "linkshorten") {
-        sys.stopEvent();
         try {
             // THIS API USES Strudels's USER NAME AND KEY FOR https://bitly.com/
             var apiUser = "strudelspo";
@@ -508,7 +485,6 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // WEB CALL
     // ******** ******** ********
     if (command === "webcall") {
-        sys.stopEvent();
         if (commandData === "") {
             sendBotMsg("Please enter a web address to webcall.");
             return;
@@ -524,7 +500,6 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // GET OBJECT KEYS + VALUES
     // ******** ******** ********
     if (command === "obj") {
-        sys.stopEvent();
         var x;
         if (commandData === "") {
             sendBotMsg("Enter either [ROOT/client/client.network()/sys] as command data to print Pokemon Online's built-in Client Script object keys. If there are any added custom objects, you may enter them instead.");
@@ -544,7 +519,6 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // EVAL
     // ******** ******** ********
     if (command === "eval") {
-        sys.stopEvent();
         if (commandData === "") {
             sendBotMsg("Enter a script line. Proceed with caution using this.");
             return;
@@ -560,7 +534,6 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // RANDOM HANGMAN GAME
     // ******** ******** ********
     if (command === "rnghangman") {
-        sys.stopEvent();
         var answerRng;
         switch (toolRng(0, 3)) {
             case 0:
@@ -801,8 +774,8 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     }
     // CREDITS
     if (command === "credits") {
-        sys.stopEvent();
         var x;
+        printHtml("");
         var creditsArray = [
         "**** Credits ****"
         ,"Script written by: Nightfall Alicorn"
@@ -823,9 +796,9 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // OWNER HELP CONSOLE
     // ******** ******** ********
     if ((command === "help") || (command === "commands")) {
-        sys.stopEvent();
         var x;
-        printHtml("<font color='#005000'><timestamp/><b>Nova's Client Script " + SCRIPT_VERSION + " Commands</b></font>");
+        printHtml("");
+        printHtml("<font color='#003000'><timestamp/><b>~ Nova's Client Script " + SCRIPT_VERSION + " Commands ~</b></font>");
         // OWNER COMMANDS
         var helpArrayOwner = [
         "**** Helpers ****"
@@ -839,7 +812,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
         ,"mcstop: Stops a current Multi Command running."
         ,"pm [user]: PM a user."
         ,"reconnect: Reconnect to the server."
-        ,"hex [color name]: Prints the hex of a color name. Doesn't have all colors."
+        ,"hex [colo(u)r name]: Prints the hex of a color name. Doesn't have all colors."
         ,"symbol(s): Displays an input panel of symbols."
         ,"**** Official Channel Helpers ****"
         ,"rnghangman: Makes a random hangman game on the official Pokemon Online server."
