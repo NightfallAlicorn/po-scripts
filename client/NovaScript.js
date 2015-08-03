@@ -1,6 +1,8 @@
 /*
-NovaScript
-By Nightfall Alicorn
+Script Name: Nova's Client Script
+File Name: NovaScript.js
+File ID: 8f342b9004d2651c412f144cfd5e8005c557ef0e
+Author: Nightfall Alicorn
 
 */
 
@@ -14,10 +16,13 @@ sys.unsetAllTimers();
 // GLOBAL VARIABLES
 // ******** ******** ********
 var ROOT = this;
-var SCRIPT_VERSION = "v1.26";
+var SCRIPT_VERSION = "v1.27";
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
 var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
-var SCRIPT_URL = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
+var SCRIPT_URL_STANDARD = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
+var SCRIPT_URL_AUTO = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
+var SCRIPT_ID_STANDARD = sys.sha1("NovaScript.js");
+var SCRIPT_ID_AUTO = sys.sha1("NovaScriptAutoUpdater.js");
 var INIT = false;
 var PUBLIC_COMMAND_ERROR_OCCURRED = false;
 
@@ -515,6 +520,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
         } catch (error) {
             sendBotMsg(error);
         }
+        return;
     }
     // EVAL
     // ******** ******** ********
@@ -688,15 +694,27 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
             sendBotMsg("This command requires Safe Scripts to be enabled.");
             return;
         }
-        sendBotMsg("Downloading script...");
         try {
-            var scriptData = String(sys.synchronousWebCall(SCRIPT_URL));
-            sys.writeToFile(sys.scriptsFolder + "scripts.js", scriptData);
-            sys.changeScript(scriptData, false);
-            sendBotMsg("Script updated.");
+            if (commandData === "standard") {
+                sendBotMsg("Downloading standard script...");
+                var scriptData = String(sys.synchronousWebCall(SCRIPT_URL_STANDARD));
+                sys.writeToFile(sys.scriptsFolder + "scripts.js", scriptData);
+                sys.changeScript(scriptData, false);
+                sendBotMsg("Script updated.");
+                return;
+            }
+            if (commandData === "auto") {
+                sendBotMsg("Downloading auto updater script...");
+                var scriptData = String(sys.synchronousWebCall(SCRIPT_URL_AUTO));
+                sys.writeToFile(sys.scriptsFolder + "scripts.js", scriptData);
+                sys.changeScript(scriptData, false);
+                sendBotMsg("Script updated.");
+                return;
+            }
         } catch (error) {
             sendBotMsg("Script update error on line " + error.lineNumber + ", " + error.message);
         }
+        sendBotMsg("Please enter \"standard\" or \"auto\" as command data input. Standard will require manual updating. Auto will automatically update the script when you log on.");
         return;
     }
     // UPDATE SCRIPT
@@ -798,7 +816,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     if ((command === "help") || (command === "commands")) {
         var x;
         printHtml("");
-        printHtml("<font color='#003000'><timestamp/><b>~ Nova's Client Script " + SCRIPT_VERSION + " Commands ~</b></font>");
+        printHtml("<font color='#003000'><timestamp/><b>~ Nova's Client Script " + SCRIPT_VERSION + " [" + scriptTypeInstalled() + "] Commands ~</b></font>");
         // OWNER COMMANDS
         var helpArrayOwner = [
         "**** Helpers ****"
@@ -843,7 +861,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
         ,"webcall [link]: Obtains and prints data from the web."
         ,"**** Script Options ****"
         ,"uninstallscript: Removes this script."
-        ,"updatescript: Downloads and updates the script from its hosting source."
+        ,"updatescript [standard/auto]: Downloads and updates the script from its hosting source."
         ,"credits: Display the credits."
         ];
         // OTHER COMMANDS
@@ -945,6 +963,16 @@ function loadSettings() {
             sendBotMsg("Debug information: " + error);
         }
     }
+}
+// SCRIPT INSTALLED
+function scriptTypeInstalled() {
+    var poScriptFile = sys.getFileContent(sys.scriptsFolder + "scripts.js");
+    if (poScriptFile.indexOf(SCRIPT_ID_STANDARD) !== -1) {
+        return "Standard";
+    } else if (poScriptFile.indexOf(SCRIPT_ID_AUTO) !== -1) {
+        return "Auto Updater";
+    }
+    return "Unknown";
 }
 // IS LOWER CASE CHECK
 function isLowerCased(text) {
@@ -1109,7 +1137,7 @@ client.network().playerLogin.connect(function () {
 if (SETTINGS.welcomeMessage !== "none") {
     sendBotHtmlMsg(SETTINGS.welcomeMessage);
 }
-sendBotHtmlMsg("Nova's Client Script " + SCRIPT_VERSION);
+sendBotHtmlMsg("Nova's Client Script " + SCRIPT_VERSION + " [" + scriptTypeInstalled() + "]");
 sendBotMsg("Use " + SETTINGS.commandSymbolPrivate + "help for commands.");
 
 PO_CLIENT_SCRIPT = ({
