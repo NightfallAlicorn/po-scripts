@@ -1,6 +1,8 @@
 /*
-NovaScript (Auto Updater)
-By Nightfall Alicorn
+Script Name: Nova's Client Script (Auto Updater)
+File Name: NovaScriptAutoUpdater.js
+File ID: 8f21e96707057df31c4c5119f325db118eaf7716
+Author: Nightfall Alicorn
 
 */
 
