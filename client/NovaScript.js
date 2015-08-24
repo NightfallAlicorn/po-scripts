@@ -16,7 +16,7 @@ sys.unsetAllTimers();
 // GLOBAL VARIABLES
 // ******** ******** ********
 var ROOT = this;
-var SCRIPT_VERSION = "v1.31";
+var SCRIPT_VERSION = "v1.32";
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
 var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
 var SCRIPT_URL_STANDARD = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
@@ -59,7 +59,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
             return;
         }
         if (client.id(commandData) === -1) {
-            sendBotMsg("User doesn't exist or isn't currently logged in one of your channels.");
+            sendBotMsg("User " + commandData + " doesn't exist or isn't currently logged in one of your channels.");
             return;
         }
         var lookupUserId = client.id(commandData);
