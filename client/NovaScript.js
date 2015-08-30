@@ -16,7 +16,7 @@ sys.unsetAllTimers();
 // GLOBAL VARIABLES
 // ******** ******** ********
 var ROOT = this;
-var SCRIPT_VERSION = "v1.33";
+var SCRIPT_VERSION = "v1.34";
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
 var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
 var SCRIPT_URL_STANDARD = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
@@ -86,7 +86,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
         var userFlagNo = client.player(lookupUserId).flags;
         var userFlagData = flagArray;
         var userAvatarNo = client.player(lookupUserId).avatar;
-        var userChannels = "#" + UTILITIES.playerInChannels(lookupUserId).join(", #");
+        var userChannels = "#" + UTILITIES.playerInChannels(lookupUserId).sort().join(", #");
         // COLOR CHECK
         var preSetColorArray = ["#5811b1", "#399bcd", "#0474bb", "#f8760d", "#a00c9e", "#0d762b", "#5f4c00", "#9a4f6d", "#d0990f", "#1b1390", "#028678", "#0324b1"];
         if (preSetColorArray.indexOf(String(userColor)) !== -1) {
