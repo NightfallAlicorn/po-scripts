@@ -16,7 +16,7 @@ sys.unsetAllTimers();
 // GLOBAL VARIABLES
 // ******** ******** ********
 var ROOT = this;
-var SCRIPT_VERSION = "v1.35";
+var SCRIPT_VERSION = "v1.36";
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
 var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
 var SCRIPT_URL_STANDARD = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
@@ -121,82 +121,65 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // CHANNEL PLAYERS
     // ******** ******** ********
     if (command === "channelplayer" || command === "channelplayers") {
-        var x;
-        var channelPlayerIdArray = client.channel(channelId).players();
-        var channelPlayerNameArray = [];
-        for (x = 0; x < channelPlayerIdArray.length; x++) {
-            channelPlayerNameArray[x] = client.name(channelPlayerIdArray[x]);
-        }
+        var channelPlayerNameArray = UTILITIES.channelPlayerNames(channelId);
         sendBotMsg("There are " + channelPlayerNameArray.length + " users that are currently in " + channelName + ". The users are: " + channelPlayerNameArray.join(", "));
         return;
     }
     // MEMBER ALL
     // ******** ******** ********
     if (command === "memberall") {
-        var x;
-        var botName = SETTINGS.botName.memberall + ": ";
-        var channelPlayerIdArray = client.channel(channelId).players();
-        var channelPlayerNameArray = [];
-        sendChanBotMsg(channelId, "Performing /member on all players in " + channelName + "...");
-        for (x = 0; x < channelPlayerIdArray.length; x++) {
-            if (channelPlayerIdArray.length > 40) {
-                sendChanMsg(channelId, botName + "Operation aborted due to exceeding 40 members.");
+        var x, channelPlayerNameArray = UTILITIES.channelPlayerNames(channelId);
+        sendBotMsg("Performing /member on all players in " + channelName + "...");
+        for (x = 0; x < channelPlayerNameArray.length; x++) {
+            if (x > 40) {
+                sendBotMsg("Operation aborted due to exceeding 40 members.");
                 return;
             }
-            channelPlayerNameArray[x] = client.name(channelPlayerIdArray[x]);
             sendChanMsg(channelId, "/member " + channelPlayerNameArray[x]);
         }
-        sendChanBotMsg(channelId, "Completed.");
+        sendBotMsg("Done.");
         return;
     }
     // DEMEMBER ALL
     // ******** ******** ********
     if (command === "dememberall") {
-        var x;
-        var channelPlayerIdArray = client.channel(channelId).players();
-        var channelPlayerNameArray = [];
-        sendChanBotMsg(channelId, "Performing /demember on all players in " + channelName + "...");
-        for (x = 0; x < channelPlayerIdArray.length; x++) {
-            if (channelPlayerIdArray.length > 40) {
-                sendChanBotMsg(channelId, "Operation aborted due to exceeding 40 members.");
+        var x, channelPlayerNameArray = UTILITIES.channelPlayerNames(channelId);
+        sendBotMsg("Performing /demember on all players in " + channelName + "...");
+        for (x = 0; x < channelPlayerNameArray.length; x++) {
+            if (x > 40) {
+                sendBotMsg("Operation aborted due to exceeding 40 members.");
                 return;
             }
-            channelPlayerNameArray[x] = client.name(channelPlayerIdArray[x]);
             sendChanMsg(channelId, "/demember " + channelPlayerNameArray[x]);
         }
-        sendChanBotMsg(channelId, "Completed.");
+        sendBotMsg("Done.");
         return;
     }
     // KICK ALL
     // ******** ******** ********
     if (command === "kickall") {
-        var x;
-        if (commandData === "") {
-            sendBotMsg("Warning: This will kick everyone from the channel. Please enter \"confirm\", without the double-quotes, as data input after the command to perform the action.");
-            return;
-        }
+        var x, channelPlayerNameArray = UTILITIES.channelPlayerNames(channelId);
         if (commandData === "confirm") {
             sendBotMsg("Performing /ck on all players in " + channelName + "...");
-            var channelPlayerIdArray = client.channel(channelId).players();
-            var channelPlayerNameArray = [];
-            for (x = 0; x < channelPlayerIdArray.length; x++) {
-                channelPlayerNameArray[x] = client.name(channelPlayerIdArray[x]);
+            for (x = 0; x < channelPlayerNameArray.length; x++) {
                 if (x > 40) {
                     sendBotMsg("Kick limit of 40 reached. Operation stopped.");
                     return;
                 }
-                if (channelPlayerNameArray[x] !== client.ownName()) {
-                    sendChanMsg(channelId, "/ck " + channelPlayerNameArray[x]);
+                if (channelPlayerNameArray[x] === client.ownName()) {
+                    continue;
                 }
+                sendChanMsg(channelId, "/ck " + channelPlayerNameArray[x]);
             }
             sendBotMsg("Completed.");
             return;
         }
+        sendBotMsg("Warning: This will kick everyone from the channel. Please enter 'confirm', without the quotes, as data input after the command to perform the action.");
+        return;
     }
     // MULTI COMMAND
     // ******** ******** ********
     if (command === "mc") {
-        // CHECK IF ALREADY BUSY
         if (MULTI_COMMAND_WORKING === true) {
             sendBotMsg("Already busy performing a Multi Command.");
             return;
@@ -204,8 +187,8 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
         var multiCommand = "", multiDataString = "";
         if (commandData.indexOf(":") !== -1) {
             var dataArray = commandData.split(":", 2);
-            multiCommand = dataArray[0]; // COMMAND INPUT
-            multiDataString = dataArray[1]; // USERS TO USE COMMAND FOR
+            multiCommand = dataArray[0];
+            multiDataString = dataArray[1];
         }
         var multiDataArray = multiDataString.split(", ");
 
@@ -226,7 +209,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
             }
             if (multiLoopCount >= multiLoopLength) {
                 MULTI_COMMAND_WORKING = false;
-                sendBotMsg("Completed.");
+                sendBotMsg("Done.");
                 // WARNING, ADDING MORE CODE AFTER sys.unsetTimer AND DESTROYING THE TIMER WILL CRASH THE CLIENT
                 sys.unsetTimer(TIMER_MULTI_COMMAND_LOOP);
             }
@@ -282,34 +265,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
             sendBotMsg("Idling off.");
             return;
         }
-        sendBotMsg("Please enter \"on\" or \"off\" as command data input.");
-        return;
-    }
-    // CHANGE NAME
-    // ******** ******** ********
-    if (command === "changename") {
-        if (commandData === "") {
-            sendBotMsg("Please enter a name.");
-            return;
-        }
-        if (commandData.length > 20) {
-            sendBotMsg("Name too long.");
-            return;
-        }
-        if (commandData.length === 0) {
-            sendBotMsg("Name not long enough.");
-            return;
-        }
-        if (commandData.charAt(0) === "+") {
-            sendBotMsg("\"+\" can't be used as the first letter.");
-            return;
-        }
-        try {
-            client.changeName(commandData);
-            sendBotMsg("You changed your name to " + commandData);
-        } catch (error) {
-            sendBotMsg("Error with changing name.");
-        }
+        sendBotMsg("Please enter 'on' or 'off' as command data input.");
         return;
     }
     // VIEW FRIENDS LIST
@@ -516,7 +472,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
             for (x = 0; x < objKeys.length; x++) {
                 print("/" + objKeys[x] + ": " + eval(commandData)[objKeys[x]]);
             }
-            sendBotMsg("Completed.");
+            sendBotMsg("Done.");
         } catch (error) {
             sendBotMsg(error);
         }
@@ -639,6 +595,33 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
         sendBotMsg("YouTube data is currently " + (SETTINGS.youTubeStatsEnabled === true ? "on" : "off") + ".");
         return;
     }
+    // CHANGE NAME
+    // ******** ******** ********
+    if (command === "changename") {
+        if (commandData === "") {
+            sendBotMsg("Please enter a name.");
+            return;
+        }
+        if (commandData.length > 20) {
+            sendBotMsg("Name is " + commandData.length + "/20 too long.");
+            return;
+        }
+        if (commandData.length === 0) {
+            sendBotMsg("Name not long enough.");
+            return;
+        }
+        if (commandData.charAt(0) === "+") {
+            sendBotMsg("'+' can't be used as the first letter.");
+            return;
+        }
+        try {
+            client.changeName(commandData);
+            sendBotMsg("You changed your name to " + commandData);
+        } catch (error) {
+            sendBotMsg("Error with changing name.");
+        }
+        return;
+    }
     // CHANGE BOT NAME
     // ******** ******** ********
     if (command === "changebotname") {
@@ -647,7 +630,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
             return;
         }
         if (commandData.length > 20) {
-            sendBotMsg("Bot name can only be 20 characters long.");
+            sendBotMsg("Name is " + commandData.length + "/20 too long.");
             return;
         }
         SETTINGS.botName = commandData;
@@ -663,7 +646,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
             return;
         }
         if (sys.validColor(commandData) === false) {
-            sendBotMsg("Invalid hex colo(u)r. Use -hex [colo(u)r name] to help pick a colo(u)r.");
+            sendBotMsg("Invalid hex colo(u)r. Use hex command to help pick a colo(u)r.");
             return;
         }
         SETTINGS.botColor = commandData;
@@ -679,7 +662,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
             return;
         }
         if (sys.validColor(commandData) === false) {
-            sendBotMsg("Invalid hex colo(u)r. Use -hex [colo(u)r name] to help pick a colo(u)r.");
+            sendBotMsg("Invalid hex colo(u)r. Use hex command to help pick a colo(u)r.");
             return;
         }
         SETTINGS.flashColor = commandData;
@@ -725,7 +708,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
             return;
         }
         if (commandData !== "confirm") {
-            sendBotMsg("Warning: This will uninstall the script. You would need to re-download the script or another after this. Enter \"confirm\" without the double quotes to run this command.");
+            sendBotMsg("Warning: This will uninstall the script. You would need to re-download the script or another after this. Enter 'confirm' without the double quotes to run this command.");
             return;
         }
         sendBotMsg("Uninstalling script...");
