@@ -16,7 +16,7 @@ sys.unsetAllTimers();
 // GLOBAL VARIABLES
 // ******** ******** ********
 var ROOT = this;
-var SCRIPT_VERSION = "v1.32";
+var SCRIPT_VERSION = "v1.33";
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
 var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
 var SCRIPT_URL_STANDARD = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
@@ -86,6 +86,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
         var userFlagNo = client.player(lookupUserId).flags;
         var userFlagData = flagArray;
         var userAvatarNo = client.player(lookupUserId).avatar;
+        var userChannels = "#" + UTILITIES.playerInChannels(lookupUserId).join(", #");
         // COLOR CHECK
         var preSetColorArray = ["#5811b1", "#399bcd", "#0474bb", "#f8760d", "#a00c9e", "#0d762b", "#5f4c00", "#9a4f6d", "#d0990f", "#1b1390", "#028678", "#0324b1"];
         if (preSetColorArray.indexOf(String(userColor)) !== -1) {
@@ -96,6 +97,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
         sendBotMsg("Avatar No: " + userAvatarNo + " | " + "Color: " + userColor + " | " + "Auth: " + userAuthType + " (" + userAuthLevel + ")");
         sendBotMsg("Tiers: " + userTiers);
         sendBotMsg("Flags: (" + userFlagNo + ") " + userFlagData[userFlagNo]);
+        sendBotMsg("Channels: " + userChannels);
         sendBotMsg("Trainer Information: " + userTrainerInfo);
         return;
     }
@@ -541,23 +543,23 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // ******** ******** ********
     if (command === "rnghangman") {
         var answerRng;
-        switch (toolRng(0, 3)) {
+        switch (UTILITIES.rng(0, 3)) {
             case 0:
-                answerRng = toolRandomPoElement(sys.pokemon);
+                answerRng = UTILITIES.randomPoElement(sys.pokemon);
                 sendChanMsg(channelId, "/start " + answerRng + ":Pokémon");
                 break;
             case 1:
-                answerRng = toolRandomPoElement(sys.move);
+                answerRng = UTILITIES.randomPoElement(sys.move);
                 if (answerRng === "(No Move)") {answerRng = sys.move(1); }
                 sendChanMsg(channelId, "/start " + answerRng + ":Pokémon Move");
                 break;
             case 2:
-                answerRng = toolRandomPoElement(sys.item);
+                answerRng = UTILITIES.randomPoElement(sys.item);
                 if (answerRng === "(No Item)") {answerRng = sys.item(1); }
                 sendChanMsg(channelId, "/start " + answerRng + ":Pokémon Item");
                 break;
             case 3:
-                answerRng = toolRandomPoElement(sys.ability);
+                answerRng = UTILITIES.randomPoElement(sys.ability);
                 if (answerRng === "(No Ability)") {answerRng = sys.ability(1); }
                 sendChanMsg(channelId, "/start " + answerRng + ":Pokémon Ability");
                 break;
@@ -996,126 +998,141 @@ function toolFillObject(from, to) {
         }
     }
 }
-// TOOL - RANDOM PO ELEMENT
-// Tested objects: sys.pokemon, sys.move, sys.item, sys.nature, sys.ability, sys.gender
-function toolRandomPoElement(obj) {
-    var x = 0, elementArray = [];
-    while ((["Missingno", undefined, ""].indexOf(obj(x)) === -1) || (x < 1)) {
-        elementArray[x] = obj(x);
-        x++;
-    }
-    return elementArray[Math.floor(Math.random() * elementArray.length)];
-}
-// TOOL - RANDOM NUMBER GENERATOR
-function toolRng(minNumber, maxNumber) {
-    return Math.floor(Math.random() * (1 + parseInt(maxNumber, 10) - parseInt(minNumber, 10))) + parseInt(minNumber, 10);
-}
-// TOOL - HTML ESCAPE
-function toolHtmlEscape(text) {
-    return String(text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"));
-}
-function toolStripHtml(text) {
-    return text.replace(/(<([^>]+)>)/ig, "");
-}
-// SPECIAL CHARACTER ESCAPE v1.04
-function toolSpecialCharEscape(text) {
-    var x,
-        specialChar = "àáāäâăåąçčèéëêěėēęìíïîķñòóöôõōśşùúüûūůý",
-        normalChar = "aaaaaaaacceeeeeeeeiiiiknoooooossuuuuuuv";
-    for (x = 0; x < specialChar.length; x++) {
-        text = text.replace(new RegExp(specialChar.charAt(x), "g"), normalChar.charAt(x));
-    }
-    return String(text);
-}
-// REMOVE NON-CHARACTERS
-function toolRemoveNonChar(text) {
-    var x, y,
-        allowedChar = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ",
-        output = "";
-    text = String(text);
-    for (x = 0; x < text.length; x++) {
-        for (y = 0; y < allowedChar.length; y++) {
-            if (text.charAt(x) === allowedChar.charAt(y)) {
-                output = output + allowedChar.charAt(y);
-            }
+
+var UTILITIES = {
+    arrayToLowerCase: function (array) {
+        var x, formattedArray = [];
+        for (x = 0; x < array.length; x++) {
+            formattedArray[x] = array[x].toLowerCase();
         }
-    }
-    return output;
-}
-// TOOL - DEEP COPY OBJECT ENTRY
-function toolDeepCopyObject(obj) {
-    return JSON.parse(JSON.stringify(obj));
-}
-// TOOL - TIME STRING TO VALUE
-function toolTimeStringToValue(text) {
-    var date = new Date(), hour = date.getHours(), minute = date.getMinutes(), second = date.getSeconds();
-    if (hour < 10) {
-        hour = String("0" + hour);
-    } else {
-        hour = String(hour);
-    }
-    if (minute < 10) {
-        minute  = String("0" + minute);
-    } else {
-        minute = String(minute);
-    }
-    if (second < 10) {
-        second  = String("0" + second);
-    } else {
-        second = String(second);
-    }
-    return text.replace(/hh/i, hour).replace(/mm/i, minute).replace(/ss/i, second);
-}
-// TOOL - PO COMMAND TIME CONVERT
-function toolPoCommandTimeConvert(input) {
-    var x, junctionArrayNum;
-    if (input === undefined) {
-        return "1 day";
-    }
-    try {
-        // GET SECONDS
-        var parts = input.split(" ");
-        var seconds = 0;
-        for (x = 0; x < parts.length; x++) {
-            var countType = (parts[x][parts[x].length - 1]).toLowerCase();
-            var secondsMultiply = 60;
-            if (countType == "s") { secondsMultiply = 1; }
-            else if (countType == "m") { secondsMultiply = 60; }
-            else if (countType == "h") { secondsMultiply = 60*60; }
-            else if (countType == "d") { secondsMultiply = 24*60*60; }
-            else if (countType == "w") { secondsMultiply = 7*24*60*60; }
-            seconds = seconds + secondsMultiply * parseInt(parts[x], 10);
+        return formattedArray;
+    },
+    channelPlayerNames: function (channelId) {
+        var x,
+            playerIdArray = client.channel(parseInt(channelId, 10)).players(),
+            playerNameArray = [];
+        for (x = 0; x < playerIdArray.length; x++) {
+            playerNameArray[x] = client.name(playerIdArray[x]);
         }
-        // GET TIME STRING
-        var splitArray = [];
-        var actualNumber;
-        var dateTypeArray = [[7*24*60*60, "week"], [24*60*60, "day"], [60*60, "hour"], [60, "minute"], [1, "second"]];
-        for (junctionArrayNum = 0; junctionArrayNum < 5; ++junctionArrayNum) {
-            actualNumber = parseInt(seconds / dateTypeArray[junctionArrayNum][0], 10);
-            if (actualNumber > 0) {
-                splitArray.push((actualNumber + " " + dateTypeArray[junctionArrayNum][1] + (actualNumber > 1 ? "s" : "")));
-                seconds = seconds - actualNumber * dateTypeArray[junctionArrayNum][0];
-                if (splitArray.length >= 2) {
-                    break;
+        return playerNameArray;
+    },
+    deepCopyObject: function (obj) {
+        return JSON.parse(JSON.stringify(obj));
+    },
+    htmlEscape: function (text) {
+        return String(text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"));
+    },
+    htmlStrip: function (text) {
+        return text.replace(/(<([^>]+)>)/ig, "");
+    },
+    isLowerCased: function (text) {
+        return text.toLowerCase() === text;
+    },
+    playerInChannels: function (playerId) {
+        var x, y, foundArray = [], playerIdArray = [], myChannelsArray = client.myChannels();
+        for (x = 0; x < myChannelsArray.length; x++) {
+            playerIdArray = client.channel(client.channelId(myChannelsArray[x])).players();
+            for (y = 0; y < playerIdArray.length; y++) {
+                if (String(client.name(playerId).toLowerCase()) === String(client.name(playerIdArray[y]).toLowerCase())) {
+                    foundArray.push(myChannelsArray[x]);
                 }
             }
         }
-        return splitArray.join(", ");
-    } catch (error) {
-        return "1 day";
+        return foundArray;
+    },
+    poCommandTimeConvert: function (input) {
+        var x, junctionArrayNum;
+        if (input === undefined) {
+            return "1 day";
+        }
+        try {
+            // GET SECONDS
+            var parts = input.split(" ");
+            var seconds = 0;
+            for (x = 0; x < parts.length; x++) {
+                var countType = (parts[x][parts[x].length - 1]).toLowerCase();
+                var secondsMultiply = 60;
+                if (countType == "s") { secondsMultiply = 1; }
+                else if (countType == "m") { secondsMultiply = 60; }
+                else if (countType == "h") { secondsMultiply = 60*60; }
+                else if (countType == "d") { secondsMultiply = 24*60*60; }
+                else if (countType == "w") { secondsMultiply = 7*24*60*60; }
+                seconds = seconds + secondsMultiply * parseInt(parts[x], 10);
+            }
+            // GET TIME STRING
+            var splitArray = [];
+            var actualNumber;
+            var dateTypeArray = [[7*24*60*60, "week"], [24*60*60, "day"], [60*60, "hour"], [60, "minute"], [1, "second"]];
+            for (junctionArrayNum = 0; junctionArrayNum < 5; ++junctionArrayNum) {
+                actualNumber = parseInt(seconds / dateTypeArray[junctionArrayNum][0], 10);
+                if (actualNumber > 0) {
+                    splitArray.push((actualNumber + " " + dateTypeArray[junctionArrayNum][1] + (actualNumber > 1 ? "s" : "")));
+                    seconds = seconds - actualNumber * dateTypeArray[junctionArrayNum][0];
+                    if (splitArray.length >= 2) {
+                        break;
+                    }
+                }
+            }
+            return splitArray.join(", ");
+        } catch (error) {
+            return "1 day";
+        }
+    },
+    randomPoElement: function (obj) {
+        // Tested objects: sys.pokemon, sys.move, sys.item, sys.nature, sys.ability, sys.gender
+        var x = 0, elementArray = [];
+        while ((["Missingno", undefined, ""].indexOf(obj(x)) === -1) || (x < 1)) {
+            elementArray[x] = obj(x);
+            x++;
+        }
+        return elementArray[Math.floor(Math.random() * elementArray.length)];
+    },
+    removeNonChar: function (text) {
+        var x, y,
+            allowedChar = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ",
+            output = "";
+        text = String(text);
+        for (x = 0; x < text.length; x++) {
+            for (y = 0; y < allowedChar.length; y++) {
+                if (text.charAt(x) === allowedChar.charAt(y)) {
+                    output = output + allowedChar.charAt(y);
+                }
+            }
+        }
+        return output;
+    },
+    rng: function (minNumber, maxNumber) {
+        return Math.floor(Math.random() * (1 + parseInt(maxNumber, 10) - parseInt(minNumber, 10))) + parseInt(minNumber, 10);
+    },
+    specialCharEscape: function (text) {
+        var x,
+            specialChar = "àáāäâăåąçčèéëêěėēęìíïîķñòóöôõōśşùúüûūůý",
+            normalChar = "aaaaaaaacceeeeeeeeiiiiknoooooossuuuuuuv";
+        for (x = 0; x < specialChar.length; x++) {
+            text = text.replace(new RegExp(specialChar.charAt(x), "g"), normalChar.charAt(x));
+        }
+        return String(text);
+    },
+    timeStringToValue: function (text) {
+        var date = new Date(), hour = date.getHours(), minute = date.getMinutes(), second = date.getSeconds();
+        if (hour < 10) {
+            hour = String("0" + hour);
+        } else {
+            hour = String(hour);
+        }
+        if (minute < 10) {
+            minute  = String("0" + minute);
+        } else {
+            minute = String(minute);
+        }
+        if (second < 10) {
+            second  = String("0" + second);
+        } else {
+            second = String(second);
+        }
+        return text.replace(/hh/i, hour).replace(/mm/i, minute).replace(/ss/i, second);
     }
-}
-// TOOL - RETURN CHANNEL PLAYER NAME LIST ARRAY
-// ******** ******** ********
-function toolChannelPlayerNamesArray(channelId) {
-    var x,
-        channelPlayerId = client.channel(parseInt(channelId, 10)).players(),
-        channelPlayerNameArray = [];
-    for (x = 0; x < channelPlayerId.length; x++) {
-        channelPlayerNameArray[x] = client.name(channelPlayerId[x]);
-    }
-    return channelPlayerNameArray;
-}
+};
 
 // LOAD SETTINGS, IF SCRIPT IS UPDATED BY SCRIPT WINDOW
 if (client.ownId() !== -1) {
@@ -1200,7 +1217,7 @@ PO_CLIENT_SCRIPT = ({
             // BLOCK /RAINBOW IGNORE ESCAPE
             var msgPrefix = "<timestamp/><b><span style";
             if (fullMessage.indexOf(msgPrefix) !== -1) {
-                var htmlEscapedMsg = toolStripHtml(fullMessage);
+                var htmlEscapedMsg = UTILITIES.htmlStrip(fullMessage);
                 if (htmlEscapedMsg.indexOf(": " !== -1)) {
                     rainbowName = htmlEscapedMsg.substring(0, htmlEscapedMsg.indexOf(": "));
                     if (rainbowName.charAt(0) === "+") {
@@ -1279,7 +1296,7 @@ PO_CLIENT_SCRIPT = ({
         if (fullMessage.indexOf(": ") > -1) {
             sys.stopEvent();
             // ESCAPE HTML
-            var newMessage = toolHtmlEscape(userSentMessage);
+            var newMessage = UTILITIES.htmlEscape(userSentMessage);
             // ADD NAME FLASH
             var myNameFlash = newMessage.match(new RegExp('\\b' + myName + '\\b', 'i'));
             if (myNameFlash !== null) {
@@ -1317,7 +1334,7 @@ PO_CLIENT_SCRIPT = ({
             }
             // TASKBAR NOFIFICATION IF PING TAG ARE DETECTED
             if (newMessage.indexOf("<ping/>") !== -1) {
-                client.trayMessage("Flashed in " + channelName + ": ", toolTimeStringToValue("hh:mm:ss") + " || " + userSentName + ": \n" + userSentMessage);
+                client.trayMessage("Flashed in " + channelName + ": ", UTILITIES.timeStringToValue("hh:mm:ss") + " || " + userSentName + ": \n" + userSentMessage);
             }
         }
         // YOUTUBE DATA
