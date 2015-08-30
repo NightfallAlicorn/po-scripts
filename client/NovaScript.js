@@ -16,7 +16,7 @@ sys.unsetAllTimers();
 // GLOBAL VARIABLES
 // ******** ******** ********
 var ROOT = this;
-var SCRIPT_VERSION = "v1.34";
+var SCRIPT_VERSION = "v1.35";
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
 var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
 var SCRIPT_URL_STANDARD = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
@@ -79,9 +79,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
         var userColor = client.color(lookupUserId);
         var userAuthType = serverAuthLevelArray[client.auth(lookupUserId)];
         var userAuthLevel = client.auth(lookupUserId);
-        var userTiers = client.tiers(lookupUserId)
-                .toString()
-                .replace(/\,/g, ", ");
+        var userTiers = client.tiers(lookupUserId).join(", ");
         var userTrainerInfo = client.player(lookupUserId).info;
         var userFlagNo = client.player(lookupUserId).flags;
         var userFlagData = flagArray;
