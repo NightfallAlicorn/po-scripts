@@ -16,7 +16,7 @@ sys.unsetAllTimers();
 // GLOBAL VARIABLES
 // ******** ******** ********
 var ROOT = this;
-var SCRIPT_VERSION = "v1.36";
+var SCRIPT_VERSION = "v1.37";
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
 var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
 var SCRIPT_URL_STANDARD = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
@@ -47,7 +47,7 @@ SETTINGS.stalkWordArray = [];
 SETTINGS.welcomeMessage = "<img src=\"pokemon:num=359-1&gen=6&shiny=false&back=false\">";
 SETTINGS.youTubeStatsEnabled = true;
 
-var PO_CLIENT_SCRIPT;
+var PO_CLIENT_EVENT;
 
 // COMMAND HANDLER OWNER
 function commandHandlerPrivate(command, commandData, channelId, channelName) {
@@ -461,16 +461,15 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
     // GET OBJECT KEYS + VALUES
     // ******** ******** ********
     if (command === "obj") {
-        var x;
         if (commandData === "") {
             sendBotMsg("Enter either [ROOT/client/client.network()/sys] as command data to print Pokemon Online's built-in Client Script object keys. If there are any added custom objects, you may enter them instead.");
             return;
         }
         try {
+            var x, objKeys = Object.keys(eval(commandData));
             sendBotMsg("Printing " + commandData + ".keys");
-            var objKeys = Object.keys(eval(commandData));
             for (x = 0; x < objKeys.length; x++) {
-                print("/" + objKeys[x] + ": " + eval(commandData)[objKeys[x]]);
+                print("//" + objKeys[x] + ": " + eval(commandData)[objKeys[x]]);
             }
             sendBotMsg("Done.");
         } catch (error) {
@@ -488,6 +487,23 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
         try {
             sendBotMsg("Performing eval: " + commandData);
             eval(commandData);
+        } catch (error) {
+            sendBotMsg(error);
+        }
+        return;
+    }
+    // EVALP
+    // ******** ******** ********
+    if (command === "evalp") {
+        if (commandData === "") {
+            sendBotMsg("Enter a script value to print. Proceed with caution using this.");
+            return;
+        }
+        try {
+            sendBotMsg("Eval Printing: " + commandData);
+            var value = eval(commandData);
+            sendBotMsg("Type: '" + (typeof value) + "'");
+            sendBotMsg("Value: '" + value + "'");
         } catch (error) {
             sendBotMsg(error);
         }
@@ -840,6 +856,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
         ,"ytdata [off/on]: Show YouTube of links in channel."
         ,"**** Advanced Scripting Tools ****"
         ,"eval [script]: Performs script actions. Use with caution."
+        ,"evalp [script value]: Prints script value and its typeof with eval. Use with caution."
         ,"obj [ROOT/SETTINGS/client/client.network()/sys]: Prints list of Pokemon Online's object keys. Own objects can be viewed."
         ,"webcall [link]: Obtains and prints data from the web."
         ,"**** Script Options ****"
@@ -981,17 +998,37 @@ function toolFillObject(from, to) {
 }
 
 var UTILITIES = {
-    arrayToLowerCase: function (array) {
-        var x, formattedArray = [];
+    arrayShuffle: function (array) {
+        var x, tempValue, randomIndex;
         for (x = 0; x < array.length; x++) {
-            formattedArray[x] = array[x].toLowerCase();
+            randomIndex = Math.floor(Math.random() * array.length);
+            tempValue = array[x];
+            array[x] = array[randomIndex];
+            array[randomIndex] = tempValue;
         }
-        return formattedArray;
+        return array;
+    },
+    arraySlice: function (array, max) {
+        var x, newArray = [], limit;
+        if (max > array.length) {
+            limit = array.length;
+        } else {
+            limit = max;
+        }
+        for (x = 0; x < limit; x++) {
+            newArray.push(array[x]);
+        }
+        return newArray;
+    },
+    arrayToLowerCase: function (array) {
+        var x;
+        for (x = 0; x < array.length; x++) {
+            array[x] = array[x].toLowerCase();
+        }
+        return array;
     },
     channelPlayerNames: function (channelId) {
-        var x,
-            playerIdArray = client.channel(parseInt(channelId, 10)).players(),
-            playerNameArray = [];
+        var x, playerIdArray = client.channel(channelId).players(), playerNameArray = [];
         for (x = 0; x < playerIdArray.length; x++) {
             playerNameArray[x] = client.name(playerIdArray[x]);
         }
@@ -1000,11 +1037,26 @@ var UTILITIES = {
     deepCopyObject: function (obj) {
         return JSON.parse(JSON.stringify(obj));
     },
+    getTier: function (tierName) {
+        var x, tiersArray = client.getTierList();
+        for (x = 0; x < tiersArray.length; x++) {
+            if (tiersArray[x].toLowerCase() === tierName.toLowerCase()) {
+                return tiersArray[x];
+            }
+        }
+        return;
+    },
     htmlEscape: function (text) {
         return String(text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"));
     },
     htmlStrip: function (text) {
         return text.replace(/(<([^>]+)>)/ig, "");
+    },
+    isIdling: function (playerId) {
+        if (client.playerExist(playerId) === false) {
+            return;
+        }
+        return [0, 2, 4, 6].indexOf(client.player(playerId).flags) !== 1;
     },
     isLowerCased: function (text) {
         return text.toLowerCase() === text;
@@ -1033,11 +1085,11 @@ var UTILITIES = {
             for (x = 0; x < parts.length; x++) {
                 var countType = (parts[x][parts[x].length - 1]).toLowerCase();
                 var secondsMultiply = 60;
-                if (countType == "s") { secondsMultiply = 1; }
-                else if (countType == "m") { secondsMultiply = 60; }
-                else if (countType == "h") { secondsMultiply = 60*60; }
-                else if (countType == "d") { secondsMultiply = 24*60*60; }
-                else if (countType == "w") { secondsMultiply = 7*24*60*60; }
+                if (countType === "s") { secondsMultiply = 1; }
+                else if (countType === "m") { secondsMultiply = 60; }
+                else if (countType === "h") { secondsMultiply = 60*60; }
+                else if (countType === "d") { secondsMultiply = 24*60*60; }
+                else if (countType === "w") { secondsMultiply = 7*24*60*60; }
                 seconds = seconds + secondsMultiply * parseInt(parts[x], 10);
             }
             // GET TIME STRING
@@ -1138,7 +1190,7 @@ if (SETTINGS.welcomeMessage !== "none") {
 sendBotHtmlMsg("Nova's Client Script " + SCRIPT_VERSION + " [" + scriptTypeInstalled() + "]");
 sendBotMsg("Use " + SETTINGS.commandSymbolPrivate + "help for commands.");
 
-PO_CLIENT_SCRIPT = ({
+PO_CLIENT_EVENT = ({
     onPlayerReceived: function (userIdReceived) {
         var userNameReceived = client.name(userIdReceived);
         // ALERT USER LOGGED ON + PM LINK
