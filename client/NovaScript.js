@@ -16,7 +16,7 @@ sys.unsetAllTimers();
 // GLOBAL VARIABLES
 // ******** ******** ********
 var ROOT = this;
-var SCRIPT_VERSION = "v1.37";
+var SCRIPT_VERSION = "v1.38";
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
 var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
 var SCRIPT_URL_STANDARD = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
@@ -1454,7 +1454,7 @@ PO_CLIENT_EVENT = ({
         }
         // ANTI CAPS
         // ******** ******** ********
-        if (SETTINGS.removeCaps === true && isLowerCased(sentMessage) === false && command.length === 0) {
+        if (SETTINGS.removeCaps === true && UTILITIES.isLowerCased(sentMessage) === false && command.length === 0) {
             sys.stopEvent();
             sendChanMsg(channelId, sentMessage.toLowerCase());
         }
