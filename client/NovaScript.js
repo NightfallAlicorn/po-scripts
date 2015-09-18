@@ -16,7 +16,7 @@ sys.unsetAllTimers();
 // GLOBAL VARIABLES
 // ******** ******** ********
 var ROOT = this;
-var SCRIPT_VERSION = "v1.38";
+var SCRIPT_VERSION = "v1.39";
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
 var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
 var SCRIPT_URL_STANDARD = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
@@ -1052,11 +1052,17 @@ var UTILITIES = {
     htmlStrip: function (text) {
         return text.replace(/(<([^>]+)>)/ig, "");
     },
+    isBattling: function (playerId) {
+        if (client.playerExist(playerId) === false) {
+            return;
+        }
+        return [4, 5, 6, 7].indexOf(client.player(playerId).flags) !== -1;
+    },
     isIdling: function (playerId) {
         if (client.playerExist(playerId) === false) {
             return;
         }
-        return [0, 2, 4, 6].indexOf(client.player(playerId).flags) !== 1;
+        return [1, 3, 5, 7].indexOf(client.player(playerId).flags) !== -1;
     },
     isLowerCased: function (text) {
         return text.toLowerCase() === text;
