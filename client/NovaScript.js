@@ -16,7 +16,7 @@ sys.unsetAllTimers();
 // GLOBAL VARIABLES
 // ******** ******** ********
 var ROOT = this;
-var SCRIPT_VERSION = "v1.39";
+var SCRIPT_VERSION = "v1.40";
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
 var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
 var SCRIPT_URL_STANDARD = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
@@ -58,45 +58,28 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
             sendBotMsg("Please enter a user name.");
             return;
         }
-        if (client.id(commandData) === -1) {
+        if (client.playerExist(client.id(commandData)) === false) {
             sendBotMsg("User " + commandData + " doesn't exist or isn't currently logged in one of your channels.");
             return;
         }
-        var lookupUserId = client.id(commandData);
-        var serverAuthLevelArray = ["User", "Moderator", "Administrator", "Owner", "Secret Auth"];
+        var userId = client.id(commandData);
+        var serverAuthNameArray = ["User", "Moderator", "Administrator", "Owner", "Hidden"];
         var flagArray = [];
-        flagArray[0] = "Idle Off / Ladder Off / Not In Battle";
-        flagArray[1] = "Idle On / Ladder Off / Not In Battle";
-        flagArray[2] = "Idle Off / Ladder On / Not In Battle";
-        flagArray[3] = "Idle On / Ladder On / Not In Battle";
-        flagArray[4] = "Idle Off / Ladder Off / In Battle";
-        flagArray[5] = "Idle On / Ladder Off / In Battle";
-        flagArray[6] = "Idle Off / Ladder On / In Battle";
-        flagArray[7] = "Idle On / Ladder On / In Battle";
-        // OBTAIN DATA
-        var userName = client.name(lookupUserId);
-        var userId = lookupUserId;
-        var userColor = client.color(lookupUserId);
-        var userAuthType = serverAuthLevelArray[client.auth(lookupUserId)];
-        var userAuthLevel = client.auth(lookupUserId);
-        var userTiers = client.tiers(lookupUserId).join(", ");
-        var userTrainerInfo = client.player(lookupUserId).info;
-        var userFlagNo = client.player(lookupUserId).flags;
-        var userFlagData = flagArray;
-        var userAvatarNo = client.player(lookupUserId).avatar;
-        var userChannels = "#" + UTILITIES.playerInChannels(lookupUserId).sort().join(", #");
-        // COLOR CHECK
+        flagArray[0] = "Idle Off | Ladder Off | Not In Battle";
+        flagArray[1] = "Idle On | Ladder Off | Not In Battle";
+        flagArray[2] = "Idle Off | Ladder On | Not In Battle";
+        flagArray[3] = "Idle On | Ladder On | Not In Battle";
+        flagArray[4] = "Idle Off | Ladder Off | <a href='po:watchplayer/" + userId + "'>In Battle</a>";
+        flagArray[5] = "Idle On | Ladder Off | <a href='po:watchplayer/" + userId + "'>In Battle</a>";
+        flagArray[6] = "Idle Off | Ladder On | <a href='po:watchplayer/" + userId + "'>In Battle</a>";
+        flagArray[7] = "Idle On | Ladder On | <a href='po:watchplayer/" + userId + "'>In Battle</a>";
         var preSetColorArray = ["#5811b1", "#399bcd", "#0474bb", "#f8760d", "#a00c9e", "#0d762b", "#5f4c00", "#9a4f6d", "#d0990f", "#1b1390", "#028678", "#0324b1"];
-        if (preSetColorArray.indexOf(String(userColor)) !== -1) {
-            userColor += " (pre)";
-        }
-        // MESSAGE PRINT
-        sendBotMsg("User: " + userName + " (Id: " + userId + ")");
-        sendBotMsg("Avatar No: " + userAvatarNo + " | " + "Color: " + userColor + " | " + "Auth: " + userAuthType + " (" + userAuthLevel + ")");
-        sendBotMsg("Tiers: " + userTiers);
-        sendBotMsg("Flags: (" + userFlagNo + ") " + userFlagData[userFlagNo]);
-        sendBotMsg("Channels: " + userChannels);
-        sendBotMsg("Trainer Information: " + userTrainerInfo);
+        sendBotMsg("User: " + client.name(userId) + " (Id: " + userId + ")");
+        sendBotMsg("Avatar No: " + client.player(userId).avatar + " | " + "Color: " + client.color(userId) + (preSetColorArray.indexOf(String(client.color(userId))) !== -1 ? " [pre]" : "") + " | " + "Auth: " + serverAuthNameArray[client.auth(userId)] + " [" + client.auth(userId) + "]");
+        sendBotHtmlMsg("Flags: " + flagArray[client.player(userId).flags] + " | Flag Bit: " + client.player(userId).flags);
+        sendBotMsg("Tiers: " + client.tiers(userId).join(", "));
+        sendBotMsg("Channels: " + "#" + UTILITIES.playerInChannels(userId).sort().join(", #"));
+        sendBotMsg("Trainer Information: " + client.player(userId).info);
         return;
     }
     // GLOBAL MESSAGE
