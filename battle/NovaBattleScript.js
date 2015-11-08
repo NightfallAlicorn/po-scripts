@@ -161,10 +161,10 @@ PO_BATTLE_EVENT = {
     },
     onCriticalHit: function (spot) {
         if ([0, 2, 4].indexOf(spot) !== -1) {
-            TEMP.player[0].critical++;
+            TEMP.player[1].critical++;
         }
         if ([1, 3, 5].indexOf(spot) !== -1) {
-            TEMP.player[1].critical++;
+            TEMP.player[0].critical++;
         }
         return;
     },
