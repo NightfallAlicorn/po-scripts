@@ -16,9 +16,9 @@ sys.unsetAllTimers();
 // GLOBAL VARIABLES
 // ******** ******** ********
 var ROOT = this;
-var SCRIPT_VERSION = "v1.41";
+var SCRIPT_VERSION = "v1.42";
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
-var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
+var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Safari", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
 var SCRIPT_URL_STANDARD = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
 var SCRIPT_URL_AUTO = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScriptAutoUpdater.js";
 var SCRIPT_ID_STANDARD = sys.sha1("NovaScript.js");
@@ -1047,6 +1047,23 @@ var UTILITIES = {
         }
         return [1, 3, 5, 7].indexOf(client.player(playerId).flags) !== -1;
     },
+    isInChannel: function (playerId, channelId) {
+        var x, channelNameArr = client.myChannels(), channelIdArr = [], playerIdArr = [];
+        for (x = 0; x < channelNameArr.length; x++) {
+            channelIdArr.push(client.channelId(channelNameArr[x]));
+        }
+        if (channelIdArr.indexOf(channelId) === -1) {
+            return false;
+        }
+        playerIdArr = client.channel(channelId).players();
+        for (x = 0; x < playerIdArr.length; x++) {
+            playerIdArr[x] = parseInt(playerIdArr[x], 10);
+        }
+        if (playerIdArr.indexOf(playerId) > -1) {
+            return true;
+        }
+        return false;
+    },
     isLowerCased: function (text) {
         return text.toLowerCase() === text;
     },
@@ -1361,42 +1378,48 @@ PO_CLIENT_EVENT = ({
         }
         // YOUTUBE DATA
         // ******** ******** ********
-        (function youTubeStats() {
-            if (SETTINGS.youTubeStatsEnabled === false) {
+        (function () {
+            if (SETTINGS.youtubeStatsEnabled === false) {
                 return;
             }
             if (((userSentMessage.indexOf("youtube.com") !== -1) && (userSentMessage.indexOf("watch?v=") !== -1)) || (userSentMessage.indexOf("youtu.be/") !== -1)) {
-                var youTubeVideoId;
+                var x,
+                    botName = "±Maya: ",
+                    ignoreUsersArray = ["Alice", "Cirno", "Night AFK", "Nightfall ALicorn", "Nightmare Moon"],
+                    youtubeVideoId;
+                for (x = 0; x < ignoreUsersArray.length; x++) {
+                    if (UTILITIES.isInChannel(client.id(ignoreUsersArray[x]), channelId)) {
+                        sendBotMsg(ignoreUsersArray[x] + " is in " + channelName + ". YouTube stats cancelled.", channelId);
+                        return;
+                    }
+                }
                 // print("Debug: YT Detected");
                 // -- PC LINK --
                 if (userSentMessage.indexOf("youtube.com") !== -1) {
-                    youTubeVideoId = userSentMessage.substr(userSentMessage.indexOf("watch?v=") + 8, 11).trim();
-                    // print("Debug: YouTube PC Id " + youTubeVideoId);
+                    youtubeVideoId = userSentMessage.substr(userSentMessage.indexOf("watch?v=") + 8, 11).trim();
+                    // print("Debug: YouTube PC Id " + youtubeVideoId);
                 }
                 // -- MOBILE LINK --
                 if (userSentMessage.indexOf("youtu.be/") !== -1) {
-                    youTubeVideoId = userSentMessage.substr(userSentMessage.indexOf("youtu.be/") + 9, 11).trim();
-                    // print("Debug: YouTube Android Id " + youTubeVideoId);
+                    youtubeVideoId = userSentMessage.substr(userSentMessage.indexOf("youtu.be/") + 9, 11).trim();
+                    // print("Debug: YouTube Android Id " + youtubeVideoId);
                 }
-                // ERROR CATCH IN CASE LINK FAILS
                 try {
-                    // GET DATA
-                    var youTubeData = JSON.parse(sys.synchronousWebCall("http://crystal.moe/youtube?id=" + youTubeVideoId));
-                    // OBTAIN DATA
-                    var title = youTubeData.items[0].snippet.localized.title;                            
-                    var author = youTubeData.items[0].snippet.channelTitle;
-                    var comments = youTubeData.items[0].statistics.commentCount;
-                    var duration = youTubeData.items[0].contentDetails.duration
-                            .toLowerCase().substr(2).replace("h", "h ").replace("m", "m ").replace("s", "s");
-                    var views = youTubeData.items[0].statistics.viewCount;
-                    var likes = youTubeData.items[0].statistics.likeCount;
-                    var disLikes = youTubeData.items[0].statistics.dislikeCount;
-                    // PRINT MESSAGE
-                    sendBotMsg("Title: " + title + ", Author: " + author + ", Comments: " + comments + ", Duration: " + duration + ", Views: " + views + ", Likes: " + likes + ", Dislikes: " + disLikes, channelId);
+                    var youtubeData = JSON.parse(sys.synchronousWebCall("http://crystal.moe/youtube?id=" + youtubeVideoId)),
+                        title = youtubeData.items[0].snippet.localized.title,
+                        author = youtubeData.items[0].snippet.channelTitle,
+                        comments = youtubeData.items[0].statistics.commentCount,
+                        duration = youtubeData.items[0].contentDetails.duration
+                            .toLowerCase().substr(2).replace("h", "h ").replace("m", "m ").replace("s", "s"),
+                        views = youtubeData.items[0].statistics.viewCount,
+                        likes = youtubeData.items[0].statistics.likeCount,
+                        disLikes = youtubeData.items[0].statistics.dislikeCount;
+                    sendChanMsg(channelId, botName + "Title: " + title + ", Author: " + author + ", Comments: " + comments + ", Duration: " + duration + ", Views: " + views + ", Likes: " + likes + ", Dislikes: " + disLikes);
                 } catch (error) {
-                    sendBotMsg("YouTube video data load failed.", channelId);
+                    sendChanMsg(channelId, botName + "YouTube video data load failed.");
                 }
             }
+            return;
         }());
         // CALL PUBLIC COMMAND HANDLER
         // ******** ******** ********
