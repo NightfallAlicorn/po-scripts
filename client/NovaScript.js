@@ -16,7 +16,7 @@ sys.unsetAllTimers();
 // GLOBAL VARIABLES
 // ******** ******** ********
 var ROOT = this;
-var SCRIPT_VERSION = "v1.40";
+var SCRIPT_VERSION = "v1.41";
 var SETTINGS_FILE_DIRECTORY = "NovaClientScriptSavedSettings.json";
 var OFFICIAL_CHANNELS_ARRAY = ["Blackjack", "Developer's Den", "Evolution Game", "Hangman", "Indigo Plateau", "Mafia", "Mafia Review", "Tohjo Falls", "Tohjo v2", "Tournaments", "TrivReview", "Trivia", "Victory Road", "Watch"];
 var SCRIPT_URL_STANDARD = "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/client/NovaScript.js";
@@ -836,7 +836,7 @@ function commandHandlerPrivate(command, commandData, channelId, channelName) {
         ,"ignorechallenge(s) [on/off]: Auto refuse challenges even when not idle."
         ,"removecaps [off/on]: Remove caps from your messages. This doesn't include bot commands."
         ,"tourround [off/on]: Allows notifications when rounds begin in tournaments."
-        ,"ytdata [off/on]: Show YouTube of links in channel."
+        ,"ytdata [off/on]: Show YouTube data of links in channel."
         ,"**** Advanced Scripting Tools ****"
         ,"eval [script]: Performs script actions. Use with caution."
         ,"evalp [script value]: Prints script value and its typeof with eval. Use with caution."
