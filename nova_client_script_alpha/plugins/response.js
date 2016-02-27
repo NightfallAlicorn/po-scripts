@@ -6,6 +6,7 @@ function Plugin() {
     if (memory.messageArray === undefined) {
         memory.messageArray = [];
     }
+    
     this.help = {
         header: "Response",
         name: "response",
