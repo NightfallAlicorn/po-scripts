@@ -1,0 +1,8 @@
+{
+    "0" : {
+        "description" : "Provides auto response message from name flashes.",
+        "title" : "Response (First Plugin Test Version)",
+        "version" : 1,
+        "url" : "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/nova_client_script_alpha/plugins/response.js"
+    }
+}
