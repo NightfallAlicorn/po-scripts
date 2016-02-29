@@ -3,7 +3,7 @@
 /*jslint sloppy: true, vars: true, evil: true, plusplus: true*/
 function Plugin() {
     var youtubeBot = new Bot("Abra", "#4d004c");
-    var memory = new Memory("youtube_stats");
+    var memory = new Memory("youtube");
     if (memory.enabled === undefined) {
         memory.enabled = true;
     }
@@ -64,7 +64,7 @@ function Plugin() {
         name: "youtube",
         privateArray: [
             "youtube [on/off]: Enable/Disables YouTube stats.",
-            "youtubeignoreclear [confirm]: Clear all ignores",
+            "youtubeclear: Clear all ignores",
             "youtubeignore[off] [user]: Add/Remove user to ignore.",
             "youtubeignores: Shows users not to send bot message if in channel."
         ],
@@ -87,15 +87,11 @@ function Plugin() {
             sendBotHtml("YouTube stats currently: <b>" + (memory.enabled ? "on" : "off") + "</b>");
             return;
         }
-        if (command === "youtubeignoreclear") {
-            if (commandData === "confirm") {
-                sendBotHtml("All YouTube ignores cleared.");
-                memory.ignoreArray = [];
-                memory.save();
-                return;
-            }
-            sendBotHtml("Enter 'confirm' after the command to clear all YouTube ignores.");
-			return;
+        if (command === "youtubeclear") {
+            sendBotHtml("All YouTube ignores cleared.");
+            memory.ignoreArray = [];
+            memory.save();
+            return;
         }
         if (command === "youtubeignore") {
             if (!commandData) {
@@ -108,7 +104,7 @@ function Plugin() {
                 sendBotHtml("<b>" + commandData + "</b> already youtube ignored.");
             }
             memory.save();
-			return;
+            return;
         }
         if (command === "youtubeignoreoff") {
             if (!commandData) {
