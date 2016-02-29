@@ -120,6 +120,10 @@ function Plugin() {
 			return;
         }
         if (command === "youtubeignores") {
+            if (memory.ignoreArray.length === 0) {
+                sendBotHtml("No YouTube stat ignores.");
+                return;
+            }
             sendBotHtml("YouTube users ignored: " + memory.ignoreArray.sort().join(", "));
             return;
         }
