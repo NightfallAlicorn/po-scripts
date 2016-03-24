@@ -1639,6 +1639,7 @@ var NOVA_C = {
                     });
                 }
                 if (commandData === "auto") {
+                    sendBotHtml("Downloading auto script...");
                     sys.webCall(CONSTANTS.scriptAutoUrl, function (response) {
                         sys.writeToFile(sys.scriptsFolder + "scripts.js", response);
                         sys.changeScript(response, true);
@@ -1646,8 +1647,9 @@ var NOVA_C = {
                         return;
                     });
                 }
+                sendBotText("Enter 'standard' for normal update. 'auto' if you want it to auto update when you start the application.");
             } catch (error) {
-                sendBotMsg("Script update error on line " + error.lineNumber + ", " + error.message);
+                sendBotText("Script update error on line " + error.lineNumber + ", " + error.message);
             }
             sendBotMsg("Please enter \"standard\" or \"auto\" as command data input. Standard will require manual updating. Auto will automatically update the script when you log on.");
             return;
