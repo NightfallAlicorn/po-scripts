@@ -1647,11 +1647,10 @@ var NOVA_C = {
                         return;
                     });
                 }
-                sendBotText("Enter 'standard' for normal update. 'auto' if you want it to auto update when you start the application.");
+                sendBotText("Enter 'standard' or 'auto' after command. Standard will require manual updating. Auto will automatically update the script when you start Pokémon Online.");
             } catch (error) {
                 sendBotText("Script update error on line " + error.lineNumber + ", " + error.message);
             }
-            sendBotMsg("Please enter \"standard\" or \"auto\" as command data input. Standard will require manual updating. Auto will automatically update the script when you log on.");
             return;
         }
         if (command === "webcall") {
