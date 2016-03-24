@@ -1628,6 +1628,10 @@ var NOVA_C = {
                 sendBotHtml("This command requires Safe Scripts to be enabled.");
                 return;
             }
+            if (!commandData) {
+                sendBotText("Enter 'standard' or 'auto' after command. Standard will require manual updating. Auto will automatically update the script when you start Pokémon Online.");
+                return;
+            }
             try {
                 if (commandData === "standard") {
                     sendBotHtml("Downloading standard script...");
@@ -1647,7 +1651,6 @@ var NOVA_C = {
                         return;
                     });
                 }
-                sendBotText("Enter 'standard' or 'auto' after command. Standard will require manual updating. Auto will automatically update the script when you start Pokémon Online.");
             } catch (error) {
                 sendBotText("Script update error on line " + error.lineNumber + ", " + error.message);
             }
