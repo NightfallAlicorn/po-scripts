@@ -455,7 +455,7 @@ function scriptVersion() {
     var file = sys.getFileContent(sys.scriptsFolder + "scripts.js");
     if (file.indexOf(CONSTANTS.sha1Master) > -1) {
         return BASENAME + " v" + BASEVER + " (Standard)";
-    } else if (file.indexOf(CONSTANTS) > -1) {
+    } else if (file.indexOf(CONSTANTS.sha1Auto) > -1) {
         return BASENAME + " v" + BASEVER + " (Auto)";
     }
     return BASENAME + " v" + BASEVER + " (Unknown)";;
