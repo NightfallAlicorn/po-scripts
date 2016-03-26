@@ -5,6 +5,11 @@
         "url" : "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/nova_client_script_beta/plugins/response.js"
     },
     "1" : {
+        "description" : "Channel game of pass the bomb. (Requires botchannel command on channel to play first.)",
+        "name" : "Voltorb",
+        "url" : "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/nova_client_script_beta/plugins/voltorb.js"
+    },
+    "2" : {
         "description" : "Displays YouTube stats in a channel were sent.",
         "name" : "YouTube",
         "url" : "https://raw.githubusercontent.com/NightfallAlicorn/po-scripts/master/nova_client_script_beta/plugins/youtube.js"
