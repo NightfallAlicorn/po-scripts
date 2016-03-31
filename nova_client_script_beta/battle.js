@@ -4,7 +4,7 @@
 
 function battleCommands(command, commandData) {
     if (command === "eval" || command === "evalp") {
-        if (commandData === "") {
+        if (!commandData) {
             sendBotMsg("Enter a script value to print. Proceed with caution using this.");
             return;
         }
@@ -21,7 +21,7 @@ function battleCommands(command, commandData) {
         return;
     }
     if (command === "obj" || command === "objp") {
-        if (commandData === "") {
+        if (!commandData) {
             sendBotMsg("Enter an object to print. Example: global or sys.");
             return;
         }
