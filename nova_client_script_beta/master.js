@@ -214,7 +214,7 @@ Memory.prototype.save = function () {
 var ISINIT = false,
     BASEDIR = "Nova Script Beta/",
     BASENAME = "Nova's Client Script Beta",
-    BASEVER = "2.00";
+    BASEVER = "2.01";
 
 // CREATE AND SET DEFAULT CONFIG
 var CONFIG = {
@@ -846,6 +846,20 @@ var NOVA_C = {
             sendBotHtml("[" + (isBattling(userId) ? poWatch(userId, "In Battle") : "Not Battling") + "] [PM: " + (SESSION.pmTempIgnoreArray.contains(commandData.toLowerCase()) === false ? poSend(privateSymbol + "temppmignore " + commandData, "Temp Ignore") : poSend(privateSymbol + "temppmignoreoff " + commandData, "Unignore")) + " ]");
             return;
         }
+        if (command === "credits") {
+            var x, creditsArray = [
+                "Auto Updater Script idea by: Heark",
+                "Contributed suggestions: Elize Lutus (Edna), SongSing",
+                "Link Shortener API provided by: Strudels",
+                "Script written by: Nightfall Alicorn (Nightmare Moon)",
+                "YouTube Stats API provided by: Crystal Moogle"
+            ];
+            sendBotHeader("Credits");
+            for (x = 0; x < creditsArray.length; x++) {
+                print("~" + creditsArray[x]);
+            }
+            return;
+        }
         if (command === "eval" || command === "evalp") {
 			if (!commandData) {
 				sendBotHtml("Enter a script value to print. Proceed with caution using this.");
@@ -863,6 +877,14 @@ var NOVA_C = {
 			}
 			return;
 		}
+        if (command === "flashall") {
+            if (isOffcialChannel(channelName) && commandData !== "confirm") {
+                sendBotHtml("Let's... not use that here and risk getting into trouble. If you really want to use it here enter 'confirm' after command.");
+                return;
+            }
+            sendBotMessage(channelId, "Channel Flash: "+ channelPlayerNames(channelId).sort().join(", "));
+            return;
+        }
         if (command === "friend") {
 			if (!commandData) {
 				sendBotHtml("Please input a user to add to friends list.");
@@ -934,6 +956,7 @@ var NOVA_C = {
                 helpArray = [
                     "channelplayer(s): Prints a list of names of players in channel.",
                     "cp [user]: Prints commands to perform on target.",
+                    "flashall: Flash everyone in the channel. Careful were you use this.",
                     "gm [message]: Sends a global message to all channels you are currently in, excluding official ones.",
                     "hex [colo(u)r name]: Prints the hex of a color name. Doesn't have all colors.",
                     "memberall[off]: Adds/Removes all current channel members.",
@@ -988,6 +1011,7 @@ var NOVA_C = {
                     "changewelcomemessage [new message/none/reset]: Changes the welcome message. Enter no command data for help.",
                     "changeprivatesymbol [symbol]: Changes the owner's command symbol.",
                     "changepublicsymbol [symbol]: Changes the public command symbol.",
+                    "credits: Display contributers.",
                     "friends: Displays your friends and their online status.",
                     "friend[off]: Add/Remove friend.",
                     "idle [on/off]: Turns idle on or off.",
