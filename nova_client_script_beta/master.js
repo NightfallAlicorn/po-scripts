@@ -78,7 +78,7 @@ String.prototype.htmlStrip = function () {
     return this.replace(/(<([^>]+)>)/gi, "");
 };
 String.prototype.regexpEscape = function () {
-    return this.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return this.replace(/[.*+?\^${}()|\[\]\\]/g, "\\$&");
 };
 
 // DECLARE CLASSES
@@ -148,7 +148,7 @@ Bot.prototype.sendBotHtml = function (message, channelId) {
     if (channelId === undefined) {
         channelId = client.currentChannel();
     }
-    client.printChannelMessage("<font color='" + this.color + "'>" + (this.enableTime === true ? "<timestamp/>" : "") + "<b>" + this.symbol + this.name + ":</font></b> " + message, channelId, true);
+    client.printChannelMessage("<font color='" + this.color + "'>" + (this.enableTime ? "<timestamp/>" : "") + "<b>" + this.symbol + this.name + ":</font></b> " + message, channelId, true);
     return;
 };
 
@@ -214,7 +214,7 @@ Memory.prototype.save = function () {
 var ISINIT = false,
     BASEDIR = "Nova Script Beta/",
     BASENAME = "Nova's Client Script Beta",
-    BASEVER = "2.01";
+    BASEVER = "2.02";
 
 // CREATE AND SET DEFAULT CONFIG
 var CONFIG = {
@@ -458,7 +458,7 @@ function scriptVersion() {
     } else if (file.indexOf(CONSTANTS.sha1Auto) > -1) {
         return BASENAME + " v" + BASEVER + " (Auto)";
     }
-    return BASENAME + " v" + BASEVER + " (Unknown)";;
+    return BASENAME + " v" + BASEVER + " (Unknown)";
 }
 function sendCostomHtml(title, message, channelId) {
     if (channelId === undefined) {
@@ -784,6 +784,50 @@ var NOVA_C = {
 			saveConfig();
 			return;
 		}
+        if (command === "changescript") {
+            var db = {
+                "bumble": {
+                    info: "Use ~commandslist to access commands. Site: http://pokemon-online.eu/threads/bumble-songsings-new-client-scripts.26952/",
+                    title: "Bumble (by SongSing)",
+                    url: "https://raw.githubusercontent.com/SongSing/ClientScripts/master/bumble.js"
+                },
+                "confetti": {
+                    info: "Site: http://pokemon-online.eu/threads/confetti-another-client-script.24230/",
+                    title: "Confetti (by caresx, AKA TheUnknownOne)",
+                    url: "https://raw.githubusercontent.com/caresx/PO-Client-Tools/gh-pages/scripts.js"
+                },
+                "crystal": {
+                    info: "Use ~commandslist to access commands. Site: http://pokemon-online.eu/threads/crystals-client-scripts.15079/",
+                    title: "Crystal's Client Script (by Crystal Moogle)",
+                    url: "https://raw.githubusercontent.com/CrystalMoogle/PO-User-Scripts/master/script.js"
+                }
+            },
+            name = commandData.toLowerCase();
+            if (!db.hasOwnProperty(name)) {
+                var x, messageArray = [];
+                sendBotHtml("There are other client scripts available. Take note I do not support or take responsibility for them.");
+                for (x in db) {
+                    messageArray.push(poSend(CONFIG.privateCommandSymbol + "changescript " + x, db[x].title));
+                }
+                sendBotHtml("Scripts available: " + messageArray.join(", "));
+                return;
+            }
+            sendBotHtml("Downloading <b>" + db[name].title + "</b>");
+            sys.webCall(db[name].url, function (response) {
+                if (response.trim() === "400: Invalid request" || !response) {
+                    sendBotHtml("Downloading <b>" + db[name].title + "</b> script failed. Either no script content of file not found.");
+                    return;
+                }
+                sendBotHtml("Initiating script...");
+                sys.writeToFile(sys.scriptsFolder + "scripts.js", response);
+                sys.changeScript(response, true);
+                if (db[name].info) {
+                    sendBotHtml("Note: " + db[name].info);
+                }
+                return;
+            });
+            return;
+        }
 		if (command === "changewelcomemessage") {
 			if (!commandData) {
 				sendBotText("Please enter a welcome message. HTML can be used here but don't forget to close the tags. Has to have less than 1000 characters. Enter \"none\" for no welcome message. Enter 'reset' as command data to reset to default setting.");
@@ -852,6 +896,7 @@ var NOVA_C = {
                 "Contributed suggestions: Elize Lutus (Edna), SongSing",
                 "Link Shortener API provided by: Strudels",
                 "Script written by: Nightfall Alicorn (Nightmare Moon)",
+                "Supporters: Skyphoenix (Zoroark)",
                 "YouTube Stats API provided by: Crystal Moogle"
             ];
             sendBotHeader("Credits");
@@ -1011,6 +1056,7 @@ var NOVA_C = {
                     "changewelcomemessage [new message/none/reset]: Changes the welcome message. Enter no command data for help.",
                     "changeprivatesymbol [symbol]: Changes the owner's command symbol.",
                     "changepublicsymbol [symbol]: Changes the public command symbol.",
+                    "changescript: Gives you choices of known client scripts to change to.",
                     "credits: Display contributers.",
                     "friends: Displays your friends and their online status.",
                     "friend[off]: Add/Remove friend.",
@@ -2288,7 +2334,7 @@ script = { // PO CREATES DUPLICATE IF NOT USING script AS NAME
         PLUGINS.call("onPlayerReceived", src);
         var x,
             srcName = client.name(src),
-            length = CONFIG.friendArray.length,
+            length = CONFIG.friendArray.length;
         for (x = 0; x < length; x++) {
             if (CONFIG.friendArray[x] === srcName.toLowerCase()) {
                 sendMasterHtml("<b>" + srcName.htmlEscape() + "</b> [" + poInfo(src, "Challenge") + "|" + poPm(src, "PM") + "] has logged on.");
